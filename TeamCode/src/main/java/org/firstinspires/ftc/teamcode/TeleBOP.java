@@ -1,16 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Path;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 
 @TeleOp
 
 public class TeleBOP extends OpMode {
     private DcMotor frontleft, frontright, backleft, backright;
     private double DrivePower = .6;
-
+    private double SlowPower = .3;
+    private double mushroom = .8;
 
     @Override
     public void init() {
@@ -26,15 +29,22 @@ public class TeleBOP extends OpMode {
 
     @Override
     public void loop() {
+        if (gamepad1.left_trigger > .1){
+            DrivePower = SlowPower;
+        }else if (gamepad1.right_trigger > .1) {
+            DrivePower = mushroom;
+        } else {
+            DrivePower = .6;
+        }
 
         if (gamepad1.left_stick_x < -.1 && gamepad1.left_stick_y > .1) {
-            diagonalleftup ();
+            diagonalrightup ();
         } else if (gamepad1.left_stick_x < -.1 && gamepad1.left_stick_y < -.1) {
-            diagonalleftdown();
-        } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y < -.1){
             diagonalrightdown();
+        } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y < -.1){
+            diagonalleftdown();
         } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y > .1) {
-            diagonalrightup();
+            diagonalleftup();
         } else if (gamepad1.left_stick_x > .1) {
             leftstrafe ();
         } else if (gamepad1.left_stick_x < -.1) {
