@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class TeleBOP extends OpMode {
     private DcMotor frontleft, frontright, backleft, backright;
     private double DrivePower = .6;
-    private double SlowPower = .3;
-    private double mushroom = .8;
+    private double RoadWorkAhead = .3;
+    private double IAmSpeed = .8;
 
     @Override
     public void init() {
@@ -30,9 +30,9 @@ public class TeleBOP extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.left_trigger > .1){
-            DrivePower = SlowPower;
+            DrivePower = RoadWorkAhead;
         }else if (gamepad1.right_trigger > .1) {
-            DrivePower = mushroom;
+            DrivePower = IAmSpeed;
         } else {
             DrivePower = .6;
         }
