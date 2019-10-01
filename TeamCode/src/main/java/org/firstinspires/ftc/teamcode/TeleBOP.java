@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
 
@@ -17,6 +18,9 @@ public class TeleBOP extends OpMode {
       frontright = hardwareMap.dcMotor.get("frontright");
       backleft = hardwareMap.dcMotor.get ("backleft");
       backright = hardwareMap.dcMotor.get ("backright");
+
+      backleft.setDirection(DcMotor.Direction.REVERSE);
+      frontleft.setDirection(DcMotor.Direction.REVERSE);
     }
 
 
@@ -25,60 +29,24 @@ public class TeleBOP extends OpMode {
 
         if (gamepad1.left_stick_x < -.1 && gamepad1.left_stick_y > .1) {
             diagonalleftup ();
-        } else {
-            abort ();
-
-        }
-        if (gamepad1.left_stick_x < -.1 && gamepad1.left_stick_y < -.1) {
+        } else if (gamepad1.left_stick_x < -.1 && gamepad1.left_stick_y < -.1) {
             diagonalleftdown();
-        } else {
-            abort ();
-
-        }
-        if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y < -.1){
+        } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y < -.1){
             diagonalrightdown();
-        } else {
-            abort ();
-
-        }
-        if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y > .1) {
+        } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y > .1) {
             diagonalrightup();
-        } else {
-            abort ();
-
-        }
-        if (gamepad1.left_stick_x > .1) {
-                rightstrafe ();
-        } else {
-            abort ();
-
-        }
-        if (gamepad1.left_stick_x < -.1) {
-           leftstrafe ();
-        } else {
-            abort ();
-
-        }
-
-        if (gamepad1.right_stick_x > .1){
-            turninplacetoright ();
-        } else {
-            abort ();
-
-        }
-        if (gamepad1.right_stick_x < -.1){
+        } else if (gamepad1.left_stick_x > .1) {
+            leftstrafe ();
+        } else if (gamepad1.left_stick_x < -.1) {
+           rightstrafe();
+        } else if (gamepad1.right_stick_x > .1){
             turninplacetoleft();
-        } else {
-            abort ();
+        } else if (gamepad1.right_stick_x < -.1){
+            turninplacetoright();
 
-        }
-        if (gamepad1.left_stick_y > .1) {
+        } else if (gamepad1.left_stick_y > .1) {
             go ();
-        } else {
-            abort ();
-
-        }
-        if (gamepad1.left_stick_y < -.1) {
+        } else if (gamepad1.left_stick_y < -.1) {
             takeitbacknowyall ();
         } else {
             abort ();
