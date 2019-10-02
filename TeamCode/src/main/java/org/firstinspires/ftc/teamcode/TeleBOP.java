@@ -13,7 +13,7 @@ public class TeleBOP extends OpMode {
     private DcMotor frontleft, frontright, backleft, backright;
     private double DrivePower = .6;
     private double RoadWorkAhead = .3;
-    private double IAmSpeed = .8;
+    private double RaidingArea51 = .8;
 
     @Override
     public void init() {
@@ -32,7 +32,7 @@ public class TeleBOP extends OpMode {
         if (gamepad1.left_trigger > .1){
             DrivePower = RoadWorkAhead;
         }else if (gamepad1.right_trigger > .1) {
-            DrivePower = IAmSpeed;
+            DrivePower = RaidingArea51;
         } else {
             DrivePower = .6;
         }
