@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Path;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -53,14 +52,12 @@ public class TeleBOP extends OpMode {
             turninplacetoleft();
         } else if (gamepad1.right_stick_x < -.1){
             turninplacetoright();
-
         } else if (gamepad1.left_stick_y > .1) {
-            go ();
+            notme ();
         } else if (gamepad1.left_stick_y < -.1) {
             takeitbacknowyall ();
         } else {
             abort ();
-
         }
     }
 
@@ -102,7 +99,7 @@ public class TeleBOP extends OpMode {
         backleft.setPower(-DrivePower);
     }
 
-    private void go() {
+    private void notme() {
         frontleft.setPower(DrivePower);
         frontright.setPower(DrivePower);
         backright.setPower(DrivePower);
