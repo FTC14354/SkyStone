@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Autonomous
 public class Autonsumo extends LinearOpMode {
    private DcMotor frontleft, frontright, backleft,backright;
-   private double DriveaPower = .6;
+   private double DrivePower = .6;
    private double RoadWorkAhead = .3;
    private double IAmSpeed = .8;
    private double open = 0;
@@ -18,19 +18,27 @@ public class Autonsumo extends LinearOpMode {
    private double ittybittybit = .3;
    private Servo grippy;
 
+
     @Override
-    public void init () {
+    public void runOpMode(){
+        while (!opModeIsActive() && !isStopRequested()){
+         telemetry.addData("Status", "Waiting in Init");
+         telemetry.update(); }
+
         frontleft = hardwareMap.dcMotor.get("frontleft");
         frontright = hardwareMap.dcMotor.get("frontright");
         backleft = hardwareMap.dcMotor.get ("backleft");
         backright = hardwareMap.dcMotor.get ("backright");
-        grippy = hardwareMap.servo.get("grippy");
+         grippy = hardwareMap.servo.get("grippy");
 
         backleft.setDirection(DcMotor.Direction.REVERSE);
         frontleft.setDirection(DcMotor.Direction.REVERSE);
+
+        doStuff ();
+
     }
-    @Override
-    public void runOpMode(){
+
+    private void doStuff() {
 
     }
 }
