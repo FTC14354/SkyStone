@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 
 @TeleOp
@@ -12,7 +13,13 @@ public class TeleBOP extends OpMode {
     private DcMotor frontleft, frontright, backleft, backright;
     private double DrivePower = .6;
     private double RoadWorkAhead = .3;
-    private double RaidingArea51 = .8;
+    private double IAmSpeed = .8;
+   // private Servo grippy;
+    private double open = 0;
+    private double WoAhweareHalfwayThere = .5;
+    private double grabbed = .3;
+    private double almostthere = .7;
+    private double ittybittybit = .3;
 
     @Override
     public void init() {
@@ -20,6 +27,7 @@ public class TeleBOP extends OpMode {
       frontright = hardwareMap.dcMotor.get("frontright");
       backleft = hardwareMap.dcMotor.get ("backleft");
       backright = hardwareMap.dcMotor.get ("backright");
+      //  grippy = hardwareMap.servo.get("grippy");
 
       backleft.setDirection(DcMotor.Direction.REVERSE);
       frontleft.setDirection(DcMotor.Direction.REVERSE);
@@ -31,7 +39,7 @@ public class TeleBOP extends OpMode {
         if (gamepad1.left_trigger > .1){
             DrivePower = RoadWorkAhead;
         }else if (gamepad1.right_trigger > .1) {
-            DrivePower = RaidingArea51;
+            DrivePower = IAmSpeed;
         } else {
             DrivePower = .6;
         }
@@ -47,18 +55,33 @@ public class TeleBOP extends OpMode {
         } else if (gamepad1.left_stick_x > .1) {
             leftstrafe ();
         } else if (gamepad1.left_stick_x < -.1) {
-           rightstrafe();
+           Totheleft();
         } else if (gamepad1.right_stick_x > .1){
             turninplacetoleft();
         } else if (gamepad1.right_stick_x < -.1){
             turninplacetoright();
         } else if (gamepad1.left_stick_y > .1) {
-            notme ();
+            notmejkunless ();
         } else if (gamepad1.left_stick_y < -.1) {
             takeitbacknowyall ();
         } else {
             abort ();
         }
+
+//        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger <.2 ) {
+//            grippy.setPosition(ittybittybit);
+//        } else if (gamepad2.right_trigger > .2 && gamepad2.right_trigger < .5) {
+//            grippy.setPosition(WoAhweareHalfwayThere);
+//        } else if (gamepad2.right_trigger > .5 && gamepad2.right_trigger < .8) {
+//            grippy.setPosition(almostthere);
+//        } else if (gamepad2.right_trigger > .8) {
+//            grippy.setPosition(grabbed);
+//        } else {
+//            grippy.setPosition(open);
+//        }
+//        telemetry.addData("Servo Position", grippy.getPosition());
+//        telemetry.addData("Status", "Running");
+//        telemetry.update();
     }
 
     private void turninplacetoleft() {
@@ -99,7 +122,7 @@ public class TeleBOP extends OpMode {
         backleft.setPower(-DrivePower);
     }
 
-    private void notme() {
+    private void notmejkunless() {
         frontleft.setPower(DrivePower);
         frontright.setPower(DrivePower);
         backright.setPower(DrivePower);
@@ -118,7 +141,7 @@ public class TeleBOP extends OpMode {
         backright.setPower(DrivePower);
     }
 
-    private void rightstrafe() {
+    private void Totheleft() {
         frontleft.setPower(DrivePower);
         frontright.setPower(-DrivePower);
         backright.setPower(DrivePower);
