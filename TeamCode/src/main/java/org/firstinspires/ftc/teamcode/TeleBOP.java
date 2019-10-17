@@ -20,6 +20,12 @@ public class TeleBOP extends OpMode {
     private double grabbed = .3;
     private double almostthere = .7;
     private double ittybittybit = .3;
+    private DcMotor liftyboi;
+    private DcMotor hippo;
+    double LiftPowerStandard = .5;
+    double LiftPowerSlow = .2;
+    double HandsToTheSky = 0;
+    double Reach = .7;
 
     @Override
     public void init() {
@@ -31,6 +37,9 @@ public class TeleBOP extends OpMode {
 
       backleft.setDirection(DcMotor.Direction.REVERSE);
       frontleft.setDirection(DcMotor.Direction.REVERSE);
+
+        liftyboi = hardwareMap.dcMotor.get("liftyboi");
+        hippo = hardwareMap.dcMotor.get("hungryhippo");
     }
 
 
@@ -66,6 +75,28 @@ public class TeleBOP extends OpMode {
             takeitbacknowyall ();
         } else {
             abort ();
+        }
+
+        if (gamepad2.right_stick_y >.1){
+            Extend ();
+        }else if (gamepad2.right_stick_y < -.1){
+            condese();
+        }else {
+            EndGame();
+        }
+
+        if (gamepad2.left_bumper = true) {
+            LiftPowerStandard = LiftPowerSlow;
+        } else {
+            LiftPowerStandard = .5;
+        }
+
+        if (gamepad2.left_stick_y > .1) {
+            GoUp();
+        }else if (gamepad2.left_stick_y < -.1) {
+            GoDown();
+        }else {
+            ItIsHighNoon ();
         }
 
 //        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger <.2 ) {
@@ -152,4 +183,17 @@ public class TeleBOP extends OpMode {
         frontright.setPower(DrivePower);
         backleft.setPower(DrivePower);
     }
+    private void GoUp(){
+        liftyboi.setPower(LiftPowerStandard);
+    }
+    private void GoDown(){
+        liftyboi.setPower(-LiftPowerStandard);
+    }
+    private void ItIsHighNoon (){
+        liftyboi.setPower(HandsToTheSky);
+    }
+    private void Extend (){ hippo.setPower(Reach); }
+    private void condese (){ hippo.setPower(-Reach); }
+    private void EndGame (){ hippo.setPower(HandsToTheSky); }
+
 }
