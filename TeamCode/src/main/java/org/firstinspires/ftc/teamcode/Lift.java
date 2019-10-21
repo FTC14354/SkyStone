@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp
 public class Lift extends OpMode {
     private DcMotor liftyboi;
     private DcMotor hippo;
+    private DigitalChannel checkandBalance;
     double LiftPowerStandard = .5;
     double LiftPowerSlow = .2;
     double HandsToTheSky = 0;
@@ -15,14 +17,29 @@ public class Lift extends OpMode {
     public void init (){
     liftyboi = hardwareMap.dcMotor.get("liftyboi");
     hippo = hardwareMap.dcMotor.get("hungryhippo");
+    checkandBalance = hardwareMap.digitalChannel.get("checkAndBalance");
     }
     public void loop () {
-        if (gamepad2.right_stick_y >.1){
-            Extend ();
-        }else if (gamepad2.right_stick_y < -.1){
-            condese();
+        boolean questionMark = checkandBalance.getState();
+        String switchState;
+        if (questionMark){
+            switchState = "Stop";
         }else {
+            switchState = "Run";
+        }
+
+        if (switchState == "Stop"){
             EndGame();
+        }else {
+
+
+            if (gamepad2.right_stick_y > .1) {
+                Extend();
+            } else if (gamepad2.right_stick_y < -.1) {
+                condese();
+            } else {
+                EndGame();
+            }
         }
 
         if (gamepad2.left_bumper = true) {
@@ -38,6 +55,10 @@ public class Lift extends OpMode {
         }else {
             ItIsHighNoon ();
         }
+
+        telemetry.addData("time", "elasped time: " + Double.toString((this.time)));
+        telemetry.addData("state", ": " + switchState);
+        telemetry.update();
     }
     private void GoUp(){
         liftyboi.setPower(LiftPowerStandard);
