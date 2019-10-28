@@ -5,23 +5,25 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import java.util.Objects;
+
 @TeleOp
 public class HallEffectSensor extends OpMode {
     private DigitalChannel backsensor;
     private DigitalChannel frontsensor;
     private DcMotor hippo;
-    double HandsToTheSky = 0;
-    double Reach = .7;
+    private double HandsToTheSky = 0;
+    private double Reach = .7;
     @Override
     public void init() {
         hippo = hardwareMap.dcMotor.get("hungryhippo");
         backsensor = hardwareMap.digitalChannel.get("backsensor");
-        frontsensor =hardwareMap.digitalChannel.get("frontsensor");
+        frontsensor = hardwareMap.digitalChannel.get("frontsensor");
     }
 
     @Override
     public void loop() {
-        boolean CanIRun = backsensor.getState() || frontsensor.getState();
+        boolean CanIRun = backsensor.getState() && frontsensor.getState();
 
         String switchState;
         if (CanIRun){
@@ -30,8 +32,8 @@ public class HallEffectSensor extends OpMode {
             switchState = "Stop";
         }
 
-        /*
-        if (switchState == "Stop"){
+
+        if (Objects.equals(switchState, "Stop")){
             EndGame();
 
         }else {
@@ -44,7 +46,7 @@ public class HallEffectSensor extends OpMode {
                 EndGame();
             }
         }
-        */
+
 
         telemetry.addData("state", ": " + switchState);
         telemetry.update();

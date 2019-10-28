@@ -5,23 +5,28 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import java.util.Objects;
+
 @TeleOp
 public class Lift extends OpMode {
     private DcMotor liftyboi;
     private DcMotor hippo;
-    private DigitalChannel checkandBalance;
-    double LiftPowerStandard = .5;
-    double MAXIMUMOVERDRIVE = 1;
-    double LiftPowerSlow = .2;
-    double HandsToTheSky = 0;
-    double Reach = .7;
+    private DigitalChannel backsensor;
+    private DigitalChannel frontsensor;
+   private double LiftPowerStandard = .5;
+    private double MAXIMUMOVERDRIVE = 1;
+   private  double LiftPowerSlow = .2;
+    private double HandsToTheSky = 0;
+    private double Reach = .7;
     public void init (){
     liftyboi = hardwareMap.dcMotor.get("liftyboi");
     hippo = hardwareMap.dcMotor.get("hungryhippo");
-    checkandBalance = hardwareMap.digitalChannel.get("checkAndBalance");
+        backsensor = hardwareMap.digitalChannel.get("backsensor");
+        frontsensor = hardwareMap.digitalChannel.get("frontsensor");
     }
     public void loop () {
-        boolean CanIRun = checkandBalance.getState();
+
+        boolean CanIRun = backsensor.getState() && frontsensor.getState();
 
         String switchState;
         if (CanIRun){
@@ -30,7 +35,8 @@ public class Lift extends OpMode {
             switchState = "Stop";
         }
 
-        if (switchState == "Stop"){
+
+        if (Objects.equals(switchState, "Stop")){
             EndGame();
 
         }else {
@@ -43,6 +49,10 @@ public class Lift extends OpMode {
                 EndGame();
             }
         }
+
+
+        telemetry.addData("state", ": " + switchState);
+        telemetry.update();
 
         if (gamepad2.left_bumper = true) {
             LiftPowerStandard = LiftPowerSlow;
@@ -58,8 +68,6 @@ public class Lift extends OpMode {
             ItIsHighNoon ();
         }
 
-        telemetry.addData("state", ": " + switchState);
-        telemetry.update();
     }
     private void GoUp(){
         liftyboi.setPower(-MAXIMUMOVERDRIVE);
