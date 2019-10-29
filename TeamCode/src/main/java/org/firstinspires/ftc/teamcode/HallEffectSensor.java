@@ -27,9 +27,9 @@ public class HallEffectSensor extends OpMode {
         telemetry.addData("frontSensor", frontSensorValue);
         telemetry.update();
 
-        if (gamepad2.right_stick_y > .1 && !frontSensorValue) {
+        if (gamepad2.right_stick_y > .1 && frontSensorValue) {
             extend();
-        } else if (gamepad2.right_stick_y < -.1 && !backSensorValue) {
+        } else if (gamepad2.right_stick_y < -.1 && backSensorValue) {
             retract();
         } else {
             stopMoving();
