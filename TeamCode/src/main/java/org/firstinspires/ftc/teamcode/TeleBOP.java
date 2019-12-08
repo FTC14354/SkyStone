@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 @TeleOp
-
 public class TeleBOP extends OpMode {
     private DcMotor frontleft, frontright, backleft, backright;
     private double DrivePower = .6;
@@ -21,68 +20,67 @@ public class TeleBOP extends OpMode {
     private double almostthere = .7;
     private double ittybittybit = .3;
     private DcMotor liftyboi;
-    private DcMotor hippo;
     double LiftPowerStandard = .5;
     double LiftPowerSlow = .2;
-    double HandsToTheSky = 0;
+    double zeropower = 0;
     double Reach = .7;
+    private Hippo hippo;
 
     @Override
     public void init() {
-      frontleft = hardwareMap.dcMotor.get("frontleft");
-      frontright = hardwareMap.dcMotor.get("frontright");
-      backleft = hardwareMap.dcMotor.get ("backleft");
-      backright = hardwareMap.dcMotor.get ("backright");
-      //  grippy = hardwareMap.servo.get("grippy");
-
-      backleft.setDirection(DcMotor.Direction.REVERSE);
-      frontleft.setDirection(DcMotor.Direction.REVERSE);
+        frontleft = hardwareMap.dcMotor.get("frontleft");
+        frontright = hardwareMap.dcMotor.get("frontright");
+        backleft = hardwareMap.dcMotor.get("backleft");
+        backright = hardwareMap.dcMotor.get("backright");
+//        grippy = hardwareMap.servo.get("grippy");
+        hippo = new Hippo(hardwareMap);
+        backleft.setDirection(DcMotor.Direction.REVERSE);
+        frontleft.setDirection(DcMotor.Direction.REVERSE);
 
         liftyboi = hardwareMap.dcMotor.get("liftyboi");
-        hippo = hardwareMap.dcMotor.get("hungryhippo");
     }
 
 
     @Override
     public void loop() {
-        if (gamepad1.left_trigger > .1){
+        if (gamepad1.left_trigger > .1) {
             DrivePower = RoadWorkAhead;
-        }else if (gamepad1.right_trigger > .1) {
+        } else if (gamepad1.right_trigger > .1) {
             DrivePower = IAmSpeed;
         } else {
             DrivePower = .6;
         }
 
         if (gamepad1.left_stick_x < -.1 && gamepad1.left_stick_y > .1) {
-            diagonalrightup ();
+            diagonalrightup();
         } else if (gamepad1.left_stick_x < -.1 && gamepad1.left_stick_y < -.1) {
             diagonalrightdown();
-        } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y < -.1){
+        } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y < -.1) {
             diagonalleftdown();
         } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y > .1) {
             diagonalleftup();
         } else if (gamepad1.left_stick_x > .1) {
-            leftstrafe ();
+            leftstrafe();
         } else if (gamepad1.left_stick_x < -.1) {
-           Totheleft();
-        } else if (gamepad1.right_stick_x > .1){
+            Totheleft();
+        } else if (gamepad1.right_stick_x > .1) {
             turninplacetoleft();
-        } else if (gamepad1.right_stick_x < -.1){
+        } else if (gamepad1.right_stick_x < -.1) {
             turninplacetoright();
         } else if (gamepad1.left_stick_y > .1) {
-            notmejkunless ();
+            forward();
         } else if (gamepad1.left_stick_y < -.1) {
-            takeitbacknowyall ();
+            backwards();
         } else {
-            abort ();
+            abort();
         }
 
-        if (gamepad2.right_stick_y >.1){
-            Extend ();
-        }else if (gamepad2.right_stick_y < -.1){
-            condese();
-        }else {
-            EndGame();
+        if (gamepad2.right_stick_y > .1) {
+            hippo.Extend();
+        } else if (gamepad2.right_stick_y < -.1) {
+            hippo.retract();
+        } else {
+            hippo.EndGame();
         }
 
         if (gamepad2.left_bumper = true) {
@@ -93,33 +91,35 @@ public class TeleBOP extends OpMode {
 
         if (gamepad2.left_stick_y > .1) {
             GoUp();
-        }else if (gamepad2.left_stick_y < -.1) {
+        } else if (gamepad2.left_stick_y < -.1) {
             GoDown();
-        }else {
-            ItIsHighNoon ();
+        } else {
+            stopLift();
+        }
+/*
+        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger < .2) {
+            grippy.setPosition(ittybittybit);
+        } else if (gamepad2.right_trigger > .2 && gamepad2.right_trigger < .5) {
+            grippy.setPosition(WoAhweareHalfwayThere);
+        } else if (gamepad2.right_trigger > .5 && gamepad2.right_trigger < .8) {
+            grippy.setPosition(almostthere);
+        } else if (gamepad2.right_trigger > .8) {
+            grippy.setPosition(grabbed);
+        } else {
+            grippy.setPosition(open);
         }
 
-//        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger <.2 ) {
-//            grippy.setPosition(ittybittybit);
-//        } else if (gamepad2.right_trigger > .2 && gamepad2.right_trigger < .5) {
-//            grippy.setPosition(WoAhweareHalfwayThere);
-//        } else if (gamepad2.right_trigger > .5 && gamepad2.right_trigger < .8) {
-//            grippy.setPosition(almostthere);
-//        } else if (gamepad2.right_trigger > .8) {
-//            grippy.setPosition(grabbed);
-//        } else {
-//            grippy.setPosition(open);
-//        }
-//        telemetry.addData("Servo Position", grippy.getPosition());
-//        telemetry.addData("Status", "Running");
-//        telemetry.update();
+        telemetry.addData("Servo Position", grippy.getPosition());
+ */
+        telemetry.addData("Status", "Running");
+        telemetry.update();
     }
 
     private void turninplacetoleft() {
-        frontleft.setPower (-DrivePower);
-        frontright.setPower (DrivePower);
-        backleft.setPower (-DrivePower);
-        backright.setPower (DrivePower);
+        frontleft.setPower(-DrivePower);
+        frontright.setPower(DrivePower);
+        backleft.setPower(-DrivePower);
+        backright.setPower(DrivePower);
     }
 
     private void leftstrafe() {
@@ -130,8 +130,8 @@ public class TeleBOP extends OpMode {
     }
 
     private void diagonalrightdown() {
-        frontright.setPower (-DrivePower);
-        backleft.setPower (-DrivePower);
+        frontright.setPower(-DrivePower);
+        backleft.setPower(-DrivePower);
     }
 
     private void diagonalleftdown() {
@@ -146,14 +146,14 @@ public class TeleBOP extends OpMode {
         backright.setPower(0);
     }
 
-    private void takeitbacknowyall() {
+    private void backwards() {
         frontleft.setPower(-DrivePower);
         frontright.setPower(-DrivePower);
         backright.setPower(-DrivePower);
         backleft.setPower(-DrivePower);
     }
 
-    private void notmejkunless() {
+    private void forward() {
         frontleft.setPower(DrivePower);
         frontright.setPower(DrivePower);
         backright.setPower(DrivePower);
@@ -161,10 +161,10 @@ public class TeleBOP extends OpMode {
     }
 
     private void turninplacetoright() {
-        frontleft.setPower (DrivePower);
-        frontright.setPower (-DrivePower);
-        backleft.setPower (DrivePower);
-        backright.setPower (-DrivePower);
+        frontleft.setPower(DrivePower);
+        frontright.setPower(-DrivePower);
+        backleft.setPower(DrivePower);
+        backright.setPower(-DrivePower);
     }
 
     private void diagonalrightup() {
@@ -179,21 +179,22 @@ public class TeleBOP extends OpMode {
         backleft.setPower(-DrivePower);
     }
 
-    private void diagonalleftup () {
+    private void diagonalleftup() {
         frontright.setPower(DrivePower);
         backleft.setPower(DrivePower);
     }
-    private void GoUp(){
+
+    private void GoUp() {
         liftyboi.setPower(LiftPowerStandard);
     }
-    private void GoDown(){
+
+    private void GoDown() {
         liftyboi.setPower(-LiftPowerStandard);
     }
-    private void ItIsHighNoon (){
-        liftyboi.setPower(HandsToTheSky);
-    }
-    private void Extend (){ hippo.setPower(Reach); }
-    private void condese (){ hippo.setPower(-Reach); }
-    private void EndGame (){ hippo.setPower(HandsToTheSky); }
 
+    private void stopLift() {
+        liftyboi.setPower(zeropower);
+    }
+
+    
 }
