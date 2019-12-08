@@ -13,7 +13,6 @@ public class TeleBOP extends OpMode {
     private double DrivePower = .6;
     private double RoadWorkAhead = .3;
     private double IAmSpeed = .8;
-   // private Servo grippy;
     private double open = 0;
     private double WoAhweareHalfwayThere = .5;
     private double grabbed = .3;
@@ -25,6 +24,7 @@ public class TeleBOP extends OpMode {
     double zeropower = 0;
     double Reach = .7;
     private Hippo hippo;
+    private Gripper gripper;
 
     @Override
     public void init() {
@@ -32,8 +32,8 @@ public class TeleBOP extends OpMode {
         frontright = hardwareMap.dcMotor.get("frontright");
         backleft = hardwareMap.dcMotor.get("backleft");
         backright = hardwareMap.dcMotor.get("backright");
-//        grippy = hardwareMap.servo.get("grippy");
         hippo = new Hippo(hardwareMap);
+        gripper = new Gripper(hardwareMap, telemetry);
         backleft.setDirection(DcMotor.Direction.REVERSE);
         frontleft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -97,22 +97,19 @@ public class TeleBOP extends OpMode {
             stopLift();
         }
 /*
-        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger < .2) {
-            grippy.setPosition(ittybittybit);
-        } else if (gamepad2.right_trigger > .2 && gamepad2.right_trigger < .5) {
-            grippy.setPosition(WoAhweareHalfwayThere);
-        } else if (gamepad2.right_trigger > .5 && gamepad2.right_trigger < .8) {
-            grippy.setPosition(almostthere);
-        } else if (gamepad2.right_trigger > .8) {
-            grippy.setPosition(grabbed);
+        if (gamepad2.right_trigger > 0) {
+            gripper.grab();
         } else {
-            grippy.setPosition(open);
+            gripper.release();
+        }
+*/
+        if (gamepad2.right_trigger > 0) {
+            gripper.test();
         }
 
-        telemetry.addData("Servo Position", grippy.getPosition());
- */
+       telemetry.addData("Gripper position", gripper.getPosition());
         telemetry.addData("Status", "Running");
-        telemetry.update();
+       telemetry.update();
     }
 
     private void turninplacetoleft() {
