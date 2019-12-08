@@ -44,20 +44,81 @@ public class AutonBlueRight extends LinearOpMode {
 
     }
 private void GetReady (){
+left1();
+forward1();
+
+
 
 }
     private void ScanForStone() {
     }
     private  void HeadToWaffle (){
-
+takeItBackNowYall();
+left2();
+left2andahalf();
+forward2();
     }
     private void placeStone(){
 
     }
     private void bringToZone (){
-
+takeItBackNowYall();
     }
     private void ParkUnderzone (){
-
+right();
     }
+    private void forward2(){
+        frontleft.setPower(1);
+        frontright.setPower(1);
+        backleft.setPower(1);
+        backright.setPower(1);
+        sleep (392);
+    }  //get measure
+    private void forward1 (){
+        frontleft.setPower(1);
+        frontright.setPower(1);
+        backleft.setPower(1);
+        backright.setPower(1);
+        sleep (392);
+    }        //get measure
+
+    private void left1 () {
+        frontleft.setPower(1);
+        frontright.setPower(-1);
+        backleft.setPower(-1);
+        backright.setPower(1);
+        sleep(234);
+
+    }        //get measure
+    private void left2 (){
+        frontleft.setPower(1);
+        frontright.setPower(-1);
+        backleft.setPower(-1);
+        backright.setPower(1);
+        sleep(234);
+    } //get measure
+    private void left2andahalf (){
+        frontleft.setPower(1);
+        frontright.setPower(-1);
+        backleft.setPower(-1);
+        backright.setPower(1);
+        sleep(234);
+    } // get measure
+
+    private void takeItBackNowYall (){
+        frontleft.setPower(-1);
+        frontright.setPower(-1);
+        backleft.setPower(-1);
+        backright.setPower(-1);
+        sleep(235);
+    }        //get measure
+
+    private void right (){
+        frontleft.setPower(-1);
+        frontright.setPower(1);
+        backleft.setPower(-1);
+        backright.setPower(1);
+        sleep(453);
+    }        //get measure
+
 }

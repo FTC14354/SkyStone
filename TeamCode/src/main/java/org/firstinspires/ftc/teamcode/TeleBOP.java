@@ -4,7 +4,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import java.util.Objects;
 
 
 @TeleOp
@@ -14,10 +17,12 @@ public class TeleBOP extends OpMode {
     private double DrivePower = .6;
     private double RoadWorkAhead = .3;
     private double IAmSpeed = .8;
-   // private Servo grippy;
+    private DigitalChannel backsensor;
+    private DigitalChannel frontsensor;
+    private Servo grippy;
     private double open = 0;
     private double WoAhweareHalfwayThere = .5;
-    private double grabbed = .3;
+    private double grabbed = 1;
     private double almostthere = .7;
     private double ittybittybit = .3;
     private DcMotor liftyboi;
@@ -33,7 +38,9 @@ public class TeleBOP extends OpMode {
       frontright = hardwareMap.dcMotor.get("frontright");
       backleft = hardwareMap.dcMotor.get ("backleft");
       backright = hardwareMap.dcMotor.get ("backright");
-      //  grippy = hardwareMap.servo.get("grippy");
+        grippy = hardwareMap.servo.get("grippy");
+        backsensor = hardwareMap.digitalChannel.get("backsensor");
+        frontsensor = hardwareMap.digitalChannel.get("frontsensor");
 
       backleft.setDirection(DcMotor.Direction.REVERSE);
       frontleft.setDirection(DcMotor.Direction.REVERSE);
@@ -98,21 +105,44 @@ public class TeleBOP extends OpMode {
         }else {
             ItIsHighNoon ();
         }
+        boolean CanIRun = backsensor.getState() && frontsensor.getState();
 
-//        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger <.2 ) {
-//            grippy.setPosition(ittybittybit);
-//        } else if (gamepad2.right_trigger > .2 && gamepad2.right_trigger < .5) {
-//            grippy.setPosition(WoAhweareHalfwayThere);
-//        } else if (gamepad2.right_trigger > .5 && gamepad2.right_trigger < .8) {
-//            grippy.setPosition(almostthere);
-//        } else if (gamepad2.right_trigger > .8) {
-//            grippy.setPosition(grabbed);
-//        } else {
-//            grippy.setPosition(open);
-//        }
-//        telemetry.addData("Servo Position", grippy.getPosition());
-//        telemetry.addData("Status", "Running");
-//        telemetry.update();
+        String switchState;
+        if (CanIRun){
+            switchState = "Run";
+        }else {
+            switchState = "Stop";
+        }
+
+
+        if (Objects.equals(switchState, "Stop")){
+            EndGame();
+
+        }else {
+
+            if (gamepad2.right_stick_y > .1) {
+                Extend();
+            } else if (gamepad2.right_stick_y < -.1) {
+                condese();
+            } else {
+                EndGame();
+            }
+        }
+
+        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger <.2 ) {
+            grippy.setPosition(ittybittybit);
+        } else if (gamepad2.right_trigger > .2 && gamepad2.right_trigger < .5) {
+            grippy.setPosition(WoAhweareHalfwayThere);
+        } else if (gamepad2.right_trigger > .5 && gamepad2.right_trigger < .8) {
+            grippy.setPosition(almostthere);
+        } else if (gamepad2.right_trigger > .8) {
+            grippy.setPosition(grabbed);
+        } else {
+            grippy.setPosition(open);
+        }
+        telemetry.addData("Servo Position", grippy.getPosition());
+        telemetry.addData("Status", "Running");
+        telemetry.update();
     }
 
     private void turninplacetoleft() {

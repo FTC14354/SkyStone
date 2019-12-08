@@ -1,63 +1,49 @@
-package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
+        package org.firstinspires.ftc.teamcode;
 
-import java.util.Objects;
+        import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+        import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+        import com.qualcomm.robotcore.hardware.DcMotor;
+        import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp
 public class HallEffectSensor extends OpMode {
-    private DigitalChannel backsensor;
-    private DigitalChannel frontsensor;
+    private DigitalChannel backSensor;
+    private DigitalChannel frontSensor;
     private DcMotor hippo;
-    private double HandsToTheSky = 0;
     private double Reach = .7;
     @Override
     public void init() {
         hippo = hardwareMap.dcMotor.get("hungryhippo");
-        backsensor = hardwareMap.digitalChannel.get("backsensor");
-        frontsensor = hardwareMap.digitalChannel.get("frontsensor");
+        backSensor = hardwareMap.digitalChannel.get("backsensor");
+        frontSensor = hardwareMap.digitalChannel.get("frontsensor");
     }
 
     @Override
     public void loop() {
-        boolean CanIRun = backsensor.getState() && frontsensor.getState();
+        boolean backSensorValue = backSensor.getState();
+        boolean frontSensorValue = frontSensor.getState();
 
-        String switchState;
-        if (CanIRun){
-            switchState = "Run";
-        }else {
-            switchState = "Stop";
-        }
-
-
-        if (Objects.equals(switchState, "Stop")){
-            EndGame();
-
-        }else {
-
-            if (gamepad2.right_stick_y > .1) {
-                Extend();
-            } else if (gamepad2.right_stick_y < -.1) {
-                condese();
-            } else {
-                EndGame();
-            }
-        }
-
-
-        telemetry.addData("state", ": " + switchState);
+        telemetry.addData("backSensor", backSensorValue);
+        telemetry.addData("frontSensor", frontSensorValue);
         telemetry.update();
+
+        if (gamepad2.right_stick_y > .1 && frontSensorValue) {
+            extend();
+        } else if (gamepad2.right_stick_y < -.1 && backSensorValue) {
+            retract();
+        } else {
+            stopMoving();
+        }
     }
-    private void Extend (){
+    private void extend (){
         hippo.setPower(Reach);
     }
-    private void condese (){
+    private void retract (){
         hippo.setPower(-Reach);
     }
-    private void EndGame (){
-        hippo.setPower(HandsToTheSky);
+    private void stopMoving (){
+        hippo.setPower(0);
     }
 }
+

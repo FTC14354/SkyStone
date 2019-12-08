@@ -42,16 +42,109 @@ public class AutonBlueLeft extends LinearOpMode {
     }
 
      private void GetReady() {
+        goForward1 ();
+        turnToRight1 ();
+        goForward1andhalf();
+        turnToLeft1();
+
     }
-     private void ScanStone (){
+
+
+
+    private void ScanStone (){
 
     }
      private void HeadToWaffle (){
+        turnToLeft2();
+        goForward2();
+        goForward2andhalf();
+        turnToRight2();
     }
       private void PlaceStone (){
 
     }
      private void ParkUnderZone(){
-
+turnToLeft3();
+turnToLeft3andhalf();
+goForward3();
     }
+
+
+        private void goForward1() {
+        frontleft.setPower(1);
+        backleft.setPower(1);
+        frontright.setPower(1);
+        backright.setPower(1);
+        sleep(234);
+    } //get numbers
+    private void goForward1andhalf(){
+        frontleft.setPower(1);
+        backleft.setPower(1);
+        frontright.setPower(1);
+        backright.setPower(1);
+        sleep(234); //get numbers
+    }
+    private void goForward2 (){
+        frontleft.setPower(1);
+        backleft.setPower(1);
+        frontright.setPower(1);
+        backright.setPower(1);
+        sleep(234);//get numbers
+    }
+    private void goForward2andhalf(){
+        frontleft.setPower(1);
+        backleft.setPower(1);
+        frontright.setPower(1);
+        backright.setPower(1);
+        sleep(234);//get numbers
+    }
+    private void goForward3 (){
+        frontleft.setPower(1);
+        backleft.setPower(1);
+        frontright.setPower(1);
+        backright.setPower(1);
+        sleep(234);//get numbers
+    }
+        private void turnToRight1(){
+        frontleft.setPower(1);
+        backright.setPower(.5);
+        backleft.setPower(1);
+        frontright.setPower(.5);
+        sleep(234);//get numbers
+        }
+        private void turnToRight2 (){
+            frontleft.setPower(1);
+            backright.setPower(.5);
+            backleft.setPower(1);
+            frontright.setPower(.5);
+            sleep(234);//get numbers
+        }
+        private void turnToLeft1(){
+        frontleft.setPower(.5);
+        backleft.setPower(.5);
+        frontright.setPower(1);
+        backright.setPower(1);
+        sleep(235);//get numbers
+        }
+        private void turnToLeft2 (){
+            frontleft.setPower(.5);
+            backleft.setPower(.5);
+            frontright.setPower(1);
+            backright.setPower(1);
+            sleep(235);//get numbers
+        }
+        private void turnToLeft3 (){
+            frontleft.setPower(.5);
+            backleft.setPower(.5);
+            frontright.setPower(1);
+            backright.setPower(1);
+            sleep(235);//get numbers
+        }
+        private void turnToLeft3andhalf (){
+    frontleft.setPower(.5);
+    backleft.setPower(.5);
+    frontright.setPower(1);
+    backright.setPower(1);
+    sleep(235);//get numbers
+}
 }

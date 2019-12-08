@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-
+@Autonomous
 public class Autonsumo extends LinearOpMode {
    private DcMotor frontleft, frontright, backleft,backright;
    private double DrivePower = .6;
@@ -17,8 +17,6 @@ public class Autonsumo extends LinearOpMode {
    private double almostThere = .7;
    private double ittybittybit = .3;
    private Servo grippy;
-
-
     @Override
     public void runOpMode(){
         while (!opModeIsActive() && !isStopRequested()){
@@ -39,6 +37,8 @@ public class Autonsumo extends LinearOpMode {
     }
 
     private void doStuff() {
+frontleft.setPower(1);
+sleep(1000);
 
     }
 }
