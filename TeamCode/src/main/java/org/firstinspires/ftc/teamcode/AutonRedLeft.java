@@ -38,22 +38,27 @@ public class AutonRedLeft extends LinearOpMode {
         ParkUnderZone();
     }
            private void ImReady (){
+
 left1();
 goForward1();
+
            }
            private void ScanforStone(){
 
            }
            private void ScadoodleToWaffle (){
+
 takeItBackNowYall();
 right1();
 right2();
 goForward2();
+
            }
            private void PlaceStone (){
 
            }
            private void BringWaffleToZone (){
+
 takeItBackNowYall1();
            }
            private void ParkUnderZone(){
@@ -120,4 +125,5 @@ left2();
         sleep(234);
         //get numbers
     }
+
 }
