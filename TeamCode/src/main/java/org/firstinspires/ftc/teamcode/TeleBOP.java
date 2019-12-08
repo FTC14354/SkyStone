@@ -32,7 +32,7 @@ public class TeleBOP extends OpMode {
         frontright = hardwareMap.dcMotor.get("frontright");
         backleft = hardwareMap.dcMotor.get("backleft");
         backright = hardwareMap.dcMotor.get("backright");
-        hippo = new Hippo(hardwareMap);
+        hippo = new Hippo(hardwareMap, telemetry);
         gripper = new Gripper(hardwareMap, telemetry);
         backleft.setDirection(DcMotor.Direction.REVERSE);
         frontleft.setDirection(DcMotor.Direction.REVERSE);
