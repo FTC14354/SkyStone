@@ -3,196 +3,123 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-
 
 @TeleOp
 public class TestTeleop extends OpMode {
-    private DcMotor frontLeft, frontRight, backLeft, backRight;
-    private double DrivePower = .6;
-    private double RoadWorkAhead = .3;
-    private double IAmSpeed = .8;
-    private Servo grippy;
-    private double open = 0;
-    private double WoAhweareHalfwayThere = .5;
-    private double grabbed = .3;
-    private double almostthere = .7;
-    private double ittybittybit = .3;
-    private DcMotor liftyboi;
-    private DcMotor hippo;
-    double LiftPowerStandard = .5;
-    double LiftPowerSlow = .2;
-    double HandsToTheSky = 0;
-    double Reach = .7;
+    private static final double MOVE_FAST = 0.8;
+    private static final double MOVE_NORMAL = 0.6;
+    private static final double MOVE_SLOW = 0.3;
+
+    private static final double LIFT_POWER_NORMAL = 0.7;
+    private static final double LIFT_POWER_SLOW = 0.2;
+
+    private Robot robot;
 
     @Override
     public void init() {
-        frontLeft = hardwareMap.dcMotor.get("frontleft");
-        frontRight = hardwareMap.dcMotor.get("frontright");
-        backLeft = hardwareMap.dcMotor.get ("backleft");
-        backRight = hardwareMap.dcMotor.get ("backright");
-        //  grippy = hardwareMap.servo.get("grippy");
 
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        this.robot = new Robot(hardwareMap);
 
-        liftyboi = hardwareMap.dcMotor.get("liftyboi");
-        hippo = hardwareMap.dcMotor.get("hungryhippo");
+        telemetry.addData("Lift",robot.lift.getTelemetry());
+        telemetry.addData("Hippo",robot.hippo.getTelemetry());
+        telemetry.addData("Gripper", robot.gripper.getTelemetry());
     }
-
 
     @Override
     public void loop() {
-        if (gamepad1.left_trigger > .1){
-            DrivePower = RoadWorkAhead;
-        }else if (gamepad1.right_trigger > .1) {
-            DrivePower = IAmSpeed;
+        movementControls(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, gamepad1.left_trigger > 0.1, gamepad1.right_trigger < 0.1);
+        hippoControls(gamepad2.right_stick_y);
+        liftControls(gamepad2.left_stick_y, gamepad2.left_bumper);
+        gripperControls(gamepad2.right_trigger);
+        telemetry.update();
+    }
+
+    private void gripperControls(float controlValue) {
+        double almostThere = 0.7;
+        double ittyBittyBit = 0.3;
+
+        if (controlValue > .1 && controlValue <.2 ) {
+            this.robot.gripper.setPosition(ittyBittyBit);
+        } else if (controlValue > .2 && controlValue < .5) {
+            double woahWeAreHalfwayThere = .5;
+            this.robot.gripper.setPosition(woahWeAreHalfwayThere);
+        } else if (controlValue > .5 && controlValue < .8) {
+            this.robot.gripper.setPosition(almostThere);
+        } else if (controlValue > .8) {
+            robot.gripper.close();
         } else {
-            DrivePower = .6;
+            robot.gripper.open();
+        }
+    }
+
+    private void liftControls(float controlValue, boolean slowMode) {
+        double speed = LIFT_POWER_NORMAL;
+
+        if (slowMode) {
+            speed = LIFT_POWER_SLOW;
         }
 
-        if (gamepad1.left_stick_x < -.1 && gamepad1.left_stick_y > .1) {
-            diagonalrightup ();
-        } else if (gamepad1.left_stick_x < -.1 && gamepad1.left_stick_y < -.1) {
-            diagonalrightdown();
-        } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y < -.1){
-            diagonalleftdown();
-        } else if (gamepad1.left_stick_x > .1 && gamepad1.left_stick_y > .1) {
-            diagonalleftup();
-        } else if (gamepad1.left_stick_x > .1) {
-            leftstrafe ();
-        } else if (gamepad1.left_stick_x < -.1) {
-            Totheleft();
-        } else if (gamepad1.right_stick_x > .1){
-            turninplacetoleft();
-        } else if (gamepad1.right_stick_x < -.1){
-            turninplacetoright();
-        } else if (gamepad1.left_stick_y > .1) {
-            notmejkunless ();
-        } else if (gamepad1.left_stick_y < -.1) {
-            takeitbacknowyall ();
+        if (controlValue > .1) {
+            robot.lift.raise(speed);
+        } else if (controlValue < -.1) {
+            robot.lift.lower(speed);
         } else {
-            abort ();
+            robot.lift.stop();
         }
+    }
 
-        if (gamepad2.right_stick_y >.1){
-            Extend ();
-        }else if (gamepad2.right_stick_y < -.1){
-            condese();
-        }else {
-            EndGame();
-        }
-
-        if (gamepad2.left_bumper = true) {
-            LiftPowerStandard = LiftPowerSlow;
+    private void hippoControls(float controlValue) {
+        if (controlValue > 0.1){
+            robot.hippo.extend();
+        } else if (controlValue < -0.1){
+            robot.hippo.retract();
         } else {
-            LiftPowerStandard = .5;
+            robot.hippo.stop();
+        }
+    }
+
+    private void movementControls(float x, float y, float turn, boolean slowMode, boolean fastMode) {
+        double speed = MOVE_NORMAL;
+
+        if (slowMode){
+            speed = MOVE_SLOW;
+        } else if (fastMode) {
+            speed = MOVE_FAST;
         }
 
-        if (gamepad2.left_stick_y > .1) {
-            GoUp();
-        }else if (gamepad2.left_stick_y < -.1) {
-            GoDown();
-        }else {
-            ItIsHighNoon ();
+        if (x < -.1 && y > .1) {
+            robot.moveNE(speed);
+
+        } else if (x < -.1 && y < -.1) {
+            robot.moveSE(speed);
+
+        } else if (x > .1 && y < -.1){
+            robot.moveSW(speed);
+
+        } else if (x > .1 && y > .1) {
+            robot.moveNW(speed);
+
+        } else if (x > .1) {
+            robot.moveRight(speed);
+
+        } else if (x < -.1) {
+            robot.moveLeft(speed);
+
+        } else if (turn > .1){
+            robot.turnLeft(speed);
+
+        } else if (turn < -.1){
+            robot.turnRight(speed);
+
+        } else if (y > .1) {
+            robot.moveForward(speed);
+
+        } else if (y < -.1) {
+            robot.moveBackwards(speed);
+
+        } else {
+            robot.stop();
+
         }
-
-//        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger <.2 ) {
-//            grippy.setPosition(ittybittybit);
-//        } else if (gamepad2.right_trigger > .2 && gamepad2.right_trigger < .5) {
-//            grippy.setPosition(WoAhweareHalfwayThere);
-//        } else if (gamepad2.right_trigger > .5 && gamepad2.right_trigger < .8) {
-//            grippy.setPosition(almostthere);
-//        } else if (gamepad2.right_trigger > .8) {
-//            grippy.setPosition(grabbed);
-//        } else {
-//            grippy.setPosition(open);
-//        }
-//        telemetry.addData("Servo Position", grippy.getPosition());
-//        telemetry.addData("Status", "Running");
-//        telemetry.update();
     }
-
-    private void turninplacetoleft() {
-        frontLeft.setPower (-DrivePower);
-        frontRight.setPower (DrivePower);
-        backLeft.setPower (-DrivePower);
-        backRight.setPower (DrivePower);
-    }
-
-    private void leftstrafe() {
-        frontLeft.setPower(-DrivePower);
-        frontRight.setPower(DrivePower);
-        backLeft.setPower(DrivePower);
-        backRight.setPower(-DrivePower);
-    }
-
-    private void diagonalrightdown() {
-        frontRight.setPower (-DrivePower);
-        backLeft.setPower (-DrivePower);
-    }
-
-    private void diagonalleftdown() {
-        frontLeft.setPower(-DrivePower);
-        backRight.setPower(-DrivePower);
-    }
-
-    private void abort() {
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
-    }
-
-    private void takeitbacknowyall() {
-        frontLeft.setPower(-DrivePower);
-        frontRight.setPower(-DrivePower);
-        backRight.setPower(-DrivePower);
-        backLeft.setPower(-DrivePower);
-    }
-
-    private void notmejkunless() {
-        frontLeft.setPower(DrivePower);
-        frontRight.setPower(DrivePower);
-        backRight.setPower(DrivePower);
-        backLeft.setPower(DrivePower);
-    }
-
-    private void turninplacetoright() {
-        frontLeft.setPower (DrivePower);
-        frontRight.setPower (-DrivePower);
-        backLeft.setPower (DrivePower);
-        backRight.setPower (-DrivePower);
-    }
-
-    private void diagonalrightup() {
-        frontLeft.setPower(DrivePower);
-        backRight.setPower(DrivePower);
-    }
-
-    private void Totheleft() {
-        frontLeft.setPower(DrivePower);
-        frontRight.setPower(-DrivePower);
-        backRight.setPower(DrivePower);
-        backLeft.setPower(-DrivePower);
-    }
-
-    private void diagonalleftup () {
-        frontRight.setPower(DrivePower);
-        backLeft.setPower(DrivePower);
-    }
-    private void GoUp(){
-        liftyboi.setPower(LiftPowerStandard);
-    }
-    private void GoDown(){
-        liftyboi.setPower(-LiftPowerStandard);
-    }
-    private void ItIsHighNoon (){
-        liftyboi.setPower(HandsToTheSky);
-    }
-    private void Extend (){ hippo.setPower(Reach); }
-    private void condese (){ hippo.setPower(-Reach); }
-    private void EndGame (){ hippo.setPower(HandsToTheSky); }
-
 }
