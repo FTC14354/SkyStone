@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import java.util.Base64;
 import java.util.Objects;
 
 
@@ -16,14 +17,15 @@ public class TeleBOP extends OpMode {
     private double DrivePower = .6;
     private double RoadWorkAhead = .3;
     private double IAmSpeed = .8;
-
+private Servo grippy;
+    private Base64.Encoder frontleften, frontrighten, backleften, backrighten;
     private double open = 0;
     private double WoAhweareHalfwayThere = .5;
     private double grabbed = 1;
     private double almostthere = .7;
     private double ittybittybit = .3;
     private DcMotor liftyboi;
-    double LiftPowerStandard = .5;
+    double LiftPowerStandard = 1;
     double LiftPowerSlow = .2;
     double zeropower = 0;
     double Reach = .7;
@@ -38,7 +40,7 @@ public class TeleBOP extends OpMode {
         backleft = hardwareMap.dcMotor.get("backleft");
         backright = hardwareMap.dcMotor.get("backright");
         hippo = new Hippo(hardwareMap, telemetry);
-        gripper = new Gripper(hardwareMap, telemetry);
+        grippy = hardwareMap.servo.get("grippy");
         backleft.setDirection(DcMotor.Direction.REVERSE);
         frontleft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -80,9 +82,9 @@ public class TeleBOP extends OpMode {
             abort();
         }
 
-        if (gamepad2.right_stick_y > .1) {
+        if (gamepad2.right_stick_y < -.1) {
             hippo.Extend();
-        } else if (gamepad2.right_stick_y < -.1) {
+        } else if (gamepad2.right_stick_y > .1) {
             hippo.retract();
         } else {
             hippo.EndGame();
@@ -95,9 +97,9 @@ public class TeleBOP extends OpMode {
         }
 
         if (gamepad2.left_stick_y > .1) {
-            GoUp();
-        } else if (gamepad2.left_stick_y < -.1) {
             GoDown();
+        } else if (gamepad2.left_stick_y < -.1) {
+            GoUp();
         } else {
             stopLift();
         }
@@ -108,12 +110,28 @@ public class TeleBOP extends OpMode {
             gripper.release();
         }
 */
-        if (gamepad2.right_trigger > 0) {
-            gripper.test();
+        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger < .2) {
+            grippy.setPosition(ittybittybit);
+        } else if (gamepad2.right_trigger > .2 && gamepad2.right_trigger < .5) {
+            grippy.setPosition(WoAhweareHalfwayThere);
+        } else if (gamepad2.right_trigger > .5 && gamepad2.right_trigger < .8) {
+            grippy.setPosition(almostthere);
+        } else if (gamepad2.right_trigger > .8) {
+            grippy.setPosition(grabbed);
+        } else {
+            grippy.setPosition(open);
         }
-        
-       telemetry.addData("Gripper position", gripper.getPosition());
         telemetry.addData("Status", "Running");
+        telemetry.addData("Servo Position", grippy.getPosition());
+        telemetry.update();
+
+
+        telemetry.addData("Status", "Running");
+        telemetry.addData("encoderValueFL", frontleft.getCurrentPosition());
+        telemetry.addData("encoderValueFR", frontright.getCurrentPosition());
+        telemetry.addData("encoderValueBR", backright.getCurrentPosition());
+        telemetry.addData("encoderValueBL", backleft.getCurrentPosition());
+
        telemetry.update();
 
     }

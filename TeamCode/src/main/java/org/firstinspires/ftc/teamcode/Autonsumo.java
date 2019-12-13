@@ -28,7 +28,6 @@ public class Autonsumo extends LinearOpMode {
         backleft = hardwareMap.dcMotor.get ("backleft");
         backright = hardwareMap.dcMotor.get ("backright");
          grippy = hardwareMap.servo.get("grippy");
-
         backleft.setDirection(DcMotor.Direction.REVERSE);
         frontleft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -37,8 +36,14 @@ public class Autonsumo extends LinearOpMode {
     }
 
     private void doStuff() {
-frontleft.setPower(1);
+forward();
 sleep(1000);
+    }
 
+    private void forward (){
+        frontleft.setPower(.5);
+        frontright.setPower(.5);
+        backleft.setPower(.5);
+        backright.setPower(.5);
     }
 }

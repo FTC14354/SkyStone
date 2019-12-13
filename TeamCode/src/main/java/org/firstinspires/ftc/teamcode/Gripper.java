@@ -10,40 +10,36 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
-public class Gripper {
-    private final Telemetry telemetry;
-    private final Servo grippy;
+public class Gripper extends OpMode{
+    private Servo grippy;
 
     private double open = 0;
     private double WoAhwereHalfwayThere = .5;
     private double grabbed = .3;
     private double almostthere = .7;
     private double ittybittybit = .3;
-    private double position = 0;
 
-    public Gripper(HardwareMap hardwareMap, Telemetry telemetry) {
+    @Override
+    public void init () {
         grippy = hardwareMap.servo.get("grippy");
-        this.telemetry = telemetry;
     }
 
-    public void grab() {
-        grippy.setPosition(ittybittybit);
-    }
-
-    public void release() {
-        grippy.setPosition(WoAhwereHalfwayThere);
-    }
-
-    public void test() {
-        position += .1;
-        if(position > 1)
-            position = 0;
-        grippy.setPosition(position);
+    @Override
+    public void loop() {
+        if (gamepad2.right_trigger > .1 && gamepad2.right_trigger < .2) {
+            grippy.setPosition(ittybittybit);
+        } else if (gamepad2.right_trigger > .2 && gamepad2.right_trigger < .5) {
+            grippy.setPosition(WoAhwereHalfwayThere);
+        } else if (gamepad2.right_trigger > .5 && gamepad2.right_trigger < .8) {
+            grippy.setPosition(almostthere);
+        } else if (gamepad2.right_trigger > .8) {
+            grippy.setPosition(grabbed);
+        } else {
+            grippy.setPosition(open);
+        }
+        telemetry.addData("Status", "Running");
         telemetry.addData("Servo Position", grippy.getPosition());
         telemetry.update();
     }
-
-    public double getPosition(){
-        return grippy.getPosition();
     }
-}
+

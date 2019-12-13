@@ -41,14 +41,14 @@ public class AutonRedRight extends LinearOpMode {
     }
     private void GetReady (){
 goForward1();
-left1();
+right1();
     }
     private void ScanStone (){
 
     }
     private void HeadToWaffle (){
-right1();
-right1andahalf();
+left1();
+left1andahalf();
     }
     private void PlaceStone (){
     }
@@ -60,7 +60,7 @@ left2();
         backleft.setPower(1);
         frontright.setPower(1);
         backright.setPower(1);
-        sleep(264);
+        sleep(500);
         //get measure
     }
     private void left1 () {
@@ -68,7 +68,7 @@ left2();
         frontright.setPower(-1);
         backleft.setPower(-1);
         backright.setPower(1);
-        sleep(101);
+        sleep(150);
         //get measure
 
     }
@@ -77,7 +77,7 @@ left2();
         frontright.setPower(-1);
         backleft.setPower(-1);
         backright.setPower(1);
-        sleep(1597);
+        sleep(500);
         //get measure
 
     }
@@ -86,22 +86,23 @@ left2();
         frontright.setTargetPosition(-4000);
         backleft.setTargetPosition(-4000);
         backright.setTargetPosition(-4000);
+        sleep (50);
     }
     private void right1 (){
         frontleft.setPower(-1);
         frontright.setPower(1);
         backleft.setPower(-1);
         backright.setPower(1);
-        sleep(1983);
+        sleep(200);
         //get measure
 
     }
-    private void right1andahalf (){
-        frontleft.setPower(-1);
-        frontright.setPower(1);
-        backleft.setPower(-1);
-        backright.setPower(1);
-        sleep(1349);
+    private void left1andahalf (){
+        frontleft.setPower(1);
+        frontright.setPower(-1);
+        backleft.setPower(1);
+        backright.setPower(-1);
+        sleep(100);
         //get measure
 
     }

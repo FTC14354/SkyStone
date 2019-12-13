@@ -13,37 +13,39 @@ public class Lift extends OpMode {
     private DcMotor hippo;
     private DigitalChannel backsensor;
     private DigitalChannel frontsensor;
-   private double LiftPowerStandard = .5;
+    private double LiftPowerStandard = 1;
     private double MAXIMUMOVERDRIVE = 1;
-   private  double LiftPowerSlow = .2;
+    private double LiftPowerSlow = .2;
     private double HandsToTheSky = 0;
     private double Reach = .7;
-    public void init (){
-    liftyboi = hardwareMap.dcMotor.get("liftyboi");
-    hippo = hardwareMap.dcMotor.get("hungryhippo");
+
+    public void init() {
+        liftyboi = hardwareMap.dcMotor.get("liftyboi");
+        hippo = hardwareMap.dcMotor.get("hungryhippo");
         backsensor = hardwareMap.digitalChannel.get("backsensor");
         frontsensor = hardwareMap.digitalChannel.get("frontsensor");
     }
-    public void loop () {
+
+    public void loop() {
 
         boolean CanIRun = backsensor.getState() && frontsensor.getState();
 
         String switchState;
-        if (CanIRun){
+        if (CanIRun) {
             switchState = "Run";
-        }else {
+        } else {
             switchState = "Stop";
         }
 
 
-        if (Objects.equals(switchState, "Stop")){
+        if (Objects.equals(switchState, "Stop")) {
             EndGame();
 
-        }else {
+        } else {
 
-            if (gamepad2.right_stick_y > .1) {
+            if (gamepad2.right_stick_y < .1) {
                 Extend();
-            } else if (gamepad2.right_stick_y < -.1) {
+            } else if (gamepad2.right_stick_y > -.1) {
                 condese();
             } else {
                 EndGame();
@@ -54,37 +56,46 @@ public class Lift extends OpMode {
         telemetry.addData("state", ": " + switchState);
         telemetry.update();
 
-        if (gamepad2.left_bumper = true) {
-            LiftPowerStandard = LiftPowerSlow;
+        if (gamepad2.left_bumper = true && gamepad2.left_stick_y > .1) {
+            GoUpSlow();
+        } else if (gamepad2.left_bumper = true && gamepad2.left_stick_y < -.1) {
+            GoDownSlow();
+        } else if (gamepad2.left_stick_y > .1) {
+            GoUp();
+        } else if (gamepad2.left_stick_y < -.1) {
+            GoDown();
         } else {
-            LiftPowerStandard = .5;
+            ItIsHighNoon();
         }
 
-        if (gamepad2.left_stick_y > .1) {
-            GoUp();
-        }else if (gamepad2.left_stick_y < -.1) {
-        GoDown();
-        }else {
-            ItIsHighNoon ();
-        }
 
     }
-    private void GoUp(){
+
+    private void GoDownSlow () {
+        liftyboi.setPower(LiftPowerSlow);
+    }
+
+    private void GoUpSlow () {
+        liftyboi.setPower(-LiftPowerSlow);
+    }
+
+
+    private void GoUp () {
         liftyboi.setPower(-MAXIMUMOVERDRIVE);
     }
-    private void GoDown(){
+    private void GoDown () {
         liftyboi.setPower(MAXIMUMOVERDRIVE);
     }
-    private void ItIsHighNoon (){
+    private void ItIsHighNoon () {
         liftyboi.setPower(HandsToTheSky);
     }
-    private void Extend (){
+    private void Extend () {
         hippo.setPower(Reach);
     }
-    private void condese (){
+    private void condese () {
         hippo.setPower(-Reach);
     }
-    private void EndGame (){
+    private void EndGame() {
         hippo.setPower(HandsToTheSky);
     }
 }
