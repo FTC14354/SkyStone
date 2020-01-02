@@ -3,101 +3,62 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class Robot {
-    Gripper gripper;
-    Hippo hippo;
-    Lift lift;
+/*
+    Extend the base robot (motion) with a Gripper, Lift, and Hippo
+    systems that are only found on the competition robot.
+ */
+public class Robot extends BaseRobot implements IRobot {
+    private Gripper gripper;
+    private Hippo hippo;
+    private Lift lift;
 
-    private DcMotor frontLeft, frontRight, backLeft, backRight;
     Robot(HardwareMap hardwareMap) {
-        frontLeft = hardwareMap.dcMotor.get("frontleft");
-        frontRight = hardwareMap.dcMotor.get("frontright");
-        backLeft = hardwareMap.dcMotor.get ("backleft");
-        backRight = hardwareMap.dcMotor.get ("backright");
+        super(hardwareMap);
 
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-
-        this.hippo = new Hippo(hardwareMap);
-        this.lift = new Lift(hardwareMap);
-        this.gripper = new Gripper(hardwareMap);
+        Hippo hippo = new Hippo(hardwareMap);
+        this.hippo = hippo;
+        telemetryMap.put("hippo", hippo);
+        Lift lift = new Lift(hardwareMap);
+        this.lift = lift;
+        telemetryMap.put("lift", lift);
+        Gripper gripper = new Gripper(hardwareMap);
+        this.gripper = gripper;
+        telemetryMap.put("gripper", gripper);
     }
 
-    void setHippo(Hippo h) { this.hippo = h;  }
-    void setLift(Lift l) {
-        this.lift = l;
-    }
-    void setGripper(Gripper g) {
-        this.gripper = g;
+    public void raiseLift(double speed) {
+        lift.raise(speed);
     }
 
-    void moveForward(double speed) {
-        frontLeft.setPower(speed);
-        frontRight.setPower(speed);
-        backRight.setPower(speed);
-        backLeft.setPower(speed);
+    public void lowerLift(double speed) {
+        lift.lower(speed);
     }
 
-    void moveBackwards(double speed) {
-        frontLeft.setPower(-speed);
-        frontRight.setPower(-speed);
-        backRight.setPower(-speed);
-        backLeft.setPower(-speed);
+    public void stopLift() {
+        lift.stop();
     }
 
-    void moveLeft(double speed) {
-        frontLeft.setPower(speed);
-        frontRight.setPower(speed);
-        backLeft.setPower(speed);
-        backRight.setPower(speed);
+    public void extendHippo() {
+        hippo.extend();
     }
 
-    void moveRight(double speed) {
-        frontLeft.setPower (speed);
-        frontRight.setPower (-speed);
-        backLeft.setPower (speed);
-        backRight.setPower (-speed);
+    public void retractHippo() {
+        hippo.retract();
     }
 
-    void turnLeft(double speed) {
-        frontLeft.setPower (-speed);
-        frontRight.setPower (speed);
-        backLeft.setPower (-speed);
-        backRight.setPower (speed);
+    public void stopHippo() {
+        hippo.stop();
     }
 
-    void turnRight(double speed) {
-        frontLeft.setPower(speed);
-        frontRight.setPower(-speed);
-        backRight.setPower(speed);
-        backLeft.setPower(-speed);
+    public void setGripperPosition(double position) {
+        gripper.setPosition(position);
     }
 
-    void moveNW(double speed) {
-        frontRight.setPower(speed);
-        backLeft.setPower(speed);
+    public void openGripper() {
+        gripper.open();
     }
 
-    void moveNE(double speed) {
-        frontLeft.setPower(speed);
-        backRight.setPower(speed);
-    }
-
-    void moveSE(double speed) {
-        frontRight.setPower (-speed);
-        backLeft.setPower (-speed);
-    }
-
-    void moveSW(double speed) {
-        frontLeft.setPower(-speed);
-        backRight.setPower(-speed);
-    }
-
-    void stop() {
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+    public void closeGripper() {
+        gripper.close();
     }
 }
-

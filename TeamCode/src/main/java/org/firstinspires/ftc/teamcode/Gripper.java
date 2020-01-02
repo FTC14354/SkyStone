@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-class Gripper {
+class Gripper implements ITelemetry {
     private final static float OPEN = 0.0f;
     private final static float CLOSED = 0.3f;
 
@@ -25,7 +25,7 @@ class Gripper {
         this.gripper.setPosition(CLOSED);
     }
 
-    String getTelemetry() {
+    public String getTelemetry() {
         double position = this.gripper.getPosition();
         return Double.toString(position);
     }
