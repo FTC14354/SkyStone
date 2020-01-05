@@ -13,23 +13,24 @@ import java.util.Objects;
 
 @TeleOp
 public class TeleBOP extends OpMode {
-    private DcMotor frontleft, frontright, backleft, backright;
+    private DcMotor frontleft, frontright, backleft, backright, hippo, liftyboi;
     private double DrivePower = .6;
     private double RoadWorkAhead = .3;
     private double IAmSpeed = .8;
-private Servo grippy;
-    private Base64.Encoder frontleften, frontrighten, backleften, backrighten;
+    private Servo grippy;
+    private double HandsToTheSky = 0;
+    private double MAXIMUMOVERDRIVE = 1;
     private double open = 0;
     private double WoAhweareHalfwayThere = .5;
     private double grabbed = 1;
     private double almostthere = .7;
     private double ittybittybit = .3;
-    private DcMotor liftyboi;
     double LiftPowerStandard = 1;
     double LiftPowerSlow = .2;
     double zeropower = 0;
     double Reach = .7;
-    private Hippo hippo;
+    private DigitalChannel backSensor;
+    private DigitalChannel frontSensor;
     private Gripper gripper;
 
     @Override
@@ -39,17 +40,27 @@ private Servo grippy;
         frontright = hardwareMap.dcMotor.get("frontright");
         backleft = hardwareMap.dcMotor.get("backleft");
         backright = hardwareMap.dcMotor.get("backright");
-        hippo = new Hippo(hardwareMap, telemetry);
+        hippo = hardwareMap.dcMotor.get("hungryhippo");
         grippy = hardwareMap.servo.get("grippy");
         backleft.setDirection(DcMotor.Direction.REVERSE);
         frontleft.setDirection(DcMotor.Direction.REVERSE);
-
+        backSensor = hardwareMap.digitalChannel.get("backsensor");
+        frontSensor = hardwareMap.digitalChannel.get("frontsensor");
         liftyboi = hardwareMap.dcMotor.get("liftyboi");
+
+
     }
 
 
     @Override
     public void loop() {
+        boolean backSensorValue = backSensor.getState();
+        boolean frontSensorValue = frontSensor.getState();
+
+        telemetry.addData("backSensor", backSensorValue);
+        telemetry.addData("frontSensor", frontSensorValue);
+        telemetry.update();
+
         if (gamepad1.left_trigger > .1) {
             DrivePower = RoadWorkAhead;
         } else if (gamepad1.right_trigger > .1) {
@@ -82,26 +93,30 @@ private Servo grippy;
             abort();
         }
 
-        if (gamepad2.right_stick_y < -.1) {
-            hippo.Extend();
-        } else if (gamepad2.right_stick_y > .1) {
-            hippo.retract();
+        if (gamepad2.right_stick_y < -.1 &&backSensorValue) {
+            retract();
+        } else if (gamepad2.right_stick_y > .1 &&  frontSensorValue) {
+            extend();
         } else {
-            hippo.EndGame();
+            stopMoving();
         }
 
-        if (gamepad2.left_bumper = true) {
+        if (gamepad2.left_bumper) {
             LiftPowerStandard = LiftPowerSlow;
         } else {
             LiftPowerStandard = .5;
         }
 
-        if (gamepad2.left_stick_y > .1) {
+        if (gamepad2.left_bumper && gamepad2.left_stick_y > .1) {
+            GoUpSlow();
+        } else if (gamepad2.left_bumper && gamepad2.left_stick_y < -.1) {
+            GoDownSlow();
+        } else if (gamepad2.left_stick_y > .1) {
             GoDown();
         } else if (gamepad2.left_stick_y < -.1) {
             GoUp();
         } else {
-            stopLift();
+            ItIsHighNoon();
         }
 /*
         if (gamepad2.right_trigger > 0) {
@@ -131,7 +146,6 @@ private Servo grippy;
         telemetry.addData("encoderValueFR", frontright.getCurrentPosition());
         telemetry.addData("encoderValueBR", backright.getCurrentPosition());
         telemetry.addData("encoderValueBL", backleft.getCurrentPosition());
-
        telemetry.update();
 
     }
@@ -200,10 +214,31 @@ private Servo grippy;
         backright.setPower(DrivePower);
         backleft.setPower(-DrivePower);
     }
+    private void extend (){
+        hippo.setPower(Reach);
+    }
+    private void retract (){
+        hippo.setPower(-Reach);
+    }
+    private void stopMoving (){
+        hippo.setPower(0);
+    }
 
     private void diagonalleftup() {
         frontright.setPower(DrivePower);
         backleft.setPower(DrivePower);
+    }
+    private void GoDownSlow () {
+        liftyboi.setPower(LiftPowerSlow);
+    }
+
+    private void GoUpSlow () {
+        liftyboi.setPower(-LiftPowerSlow);
+    }
+
+
+    private void ItIsHighNoon () {
+        liftyboi.setPower(HandsToTheSky);
     }
 
     private void GoUp() {

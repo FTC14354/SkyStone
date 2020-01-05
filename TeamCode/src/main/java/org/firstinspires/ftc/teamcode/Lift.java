@@ -15,13 +15,15 @@ public class Lift extends OpMode {
     private DigitalChannel frontsensor;
     private double LiftPowerStandard = 1;
     private double MAXIMUMOVERDRIVE = 1;
-    private double LiftPowerSlow = .2;
+    private double LiftPowerSlow = .5;
     private double HandsToTheSky = 0;
     private double Reach = .7;
 
     public void init() {
         liftyboi = hardwareMap.dcMotor.get("liftyboi");
         hippo = hardwareMap.dcMotor.get("hungryhippo");
+        hippo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         backsensor = hardwareMap.digitalChannel.get("backsensor");
         frontsensor = hardwareMap.digitalChannel.get("frontsensor");
     }
@@ -56,9 +58,9 @@ public class Lift extends OpMode {
         telemetry.addData("state", ": " + switchState);
         telemetry.update();
 
-        if (gamepad2.left_bumper = true && gamepad2.left_stick_y > .1) {
+        if (gamepad2.left_bumper && gamepad2.left_stick_y > .1) {
             GoUpSlow();
-        } else if (gamepad2.left_bumper = true && gamepad2.left_stick_y < -.1) {
+        } else if (gamepad2.left_bumper && gamepad2.left_stick_y < -.1) {
             GoDownSlow();
         } else if (gamepad2.left_stick_y > .1) {
             GoUp();

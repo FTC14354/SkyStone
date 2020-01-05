@@ -17,6 +17,7 @@ public class Autonsumo extends LinearOpMode {
    private double almostThere = .7;
    private double ittybittybit = .3;
    private Servo grippy;
+    private DcMotor liftyboi;
     @Override
     public void runOpMode(){
         while (!opModeIsActive() && !isStopRequested()){
@@ -28,6 +29,7 @@ public class Autonsumo extends LinearOpMode {
         backleft = hardwareMap.dcMotor.get ("backleft");
         backright = hardwareMap.dcMotor.get ("backright");
          grippy = hardwareMap.servo.get("grippy");
+         liftyboi = hardwareMap.dcMotor.get("liftyboi");
         backleft.setDirection(DcMotor.Direction.REVERSE);
         frontleft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -36,14 +38,25 @@ public class Autonsumo extends LinearOpMode {
     }
 
     private void doStuff() {
-forward();
-sleep(1000);
+        driftLeft ();
+        sleep (50);
     }
-
+private void driftLeft (){
+        frontright.setPower (-1);
+        frontleft.setPower(1);
+        backleft.setPower(1);
+        backright.setPower(-1);
+}
     private void forward (){
         frontleft.setPower(.5);
         frontright.setPower(.5);
         backleft.setPower(.5);
         backright.setPower(.5);
+    }
+    private void goUp (){
+        liftyboi.setPower(.5);
+    }
+    private void goDown(){
+        liftyboi.setPower(-.5);
     }
 }
