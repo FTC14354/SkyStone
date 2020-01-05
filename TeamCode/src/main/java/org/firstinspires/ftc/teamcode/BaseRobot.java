@@ -46,31 +46,31 @@ class BaseRobot {
     }
 
     public void moveLeft(double speed) {
-        frontLeft.setPower(-speed);
-        frontRight.setPower(speed);
-        backLeft.setPower(speed);
-        backRight.setPower(-speed);
-    }
-
-    public void moveRight(double speed) {
-        frontLeft.setPower (speed);
-        frontRight.setPower (-speed);
-        backLeft.setPower (speed);
-        backRight.setPower (-speed);
-    }
-
-    public void turnLeft(double speed) {
         frontLeft.setPower (-speed);
         frontRight.setPower (speed);
         backLeft.setPower (-speed);
         backRight.setPower (speed);
     }
 
-    public void turnRight(double speed) {
+    public void moveRight(double speed) {
         frontLeft.setPower(speed);
         frontRight.setPower(-speed);
-        backRight.setPower(speed);
         backLeft.setPower(-speed);
+        backRight.setPower(speed);
+    }
+
+    public void turnLeft(double speed) {
+        frontLeft.setPower(-speed);
+        frontRight.setPower(speed);
+        backRight.setPower(-speed);
+        backLeft.setPower(speed);
+    }
+
+    public void turnRight(double speed) {
+        frontLeft.setPower (speed);
+        frontRight.setPower (-speed);
+        backLeft.setPower (speed);
+        backRight.setPower (-speed);
     }
 
     public void moveNW(double speed) {

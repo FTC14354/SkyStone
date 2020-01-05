@@ -25,7 +25,7 @@ class Hippo implements ITelemetry {
 
     void retract() {
         if (backSensor.getState()) {
-            hippo.setPower(SPEED);
+            hippo.setPower(-SPEED);
         }
     }
 
@@ -34,6 +34,6 @@ class Hippo implements ITelemetry {
     }
 
     public String getTelemetry() {
-        return null;
+        return String.format("BackSensor: %s, FrontSensor: %s",backSensor.getState(),frontSensor.getState());
     }
 }
