@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+import java.sql.Driver;
 import java.util.Map;
 
 @Autonomous
@@ -25,7 +26,10 @@ public class Autonsumo extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double DRIVE_SPEED = 0.6;
     static final double TURN_SPEED = 0.5;
-    BNO055IMU imu;
+    double globalAngle, power = .30, correction, rotation;
+    PIDController pidRotate, pidDrive;
+
+
     Orientation lastAngles = new Orientation();
 
 
@@ -48,7 +52,11 @@ public class Autonsumo extends LinearOpMode {
                 telemetry.addData(t, telemetryComponent.getTelemetry());
             }
         }
+        pidRotate = new PIDController(0, 0, 0);
+        pidDrive = new PIDController(.05, 0, 0);
 
+        telemetry.addData("Mode", "calibrating...");
+        telemetry.update();
         baseRobot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         baseRobot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         baseRobot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -60,30 +68,36 @@ public class Autonsumo extends LinearOpMode {
         baseRobot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
+        telemetry.addData("1 imu heading", lastAngles.firstAngle);
+        telemetry.addData("2 global heading", globalAngle);
+        telemetry.addData("3 correction", correction);
+        telemetry.addData("4 turn rotation", rotation);
+        telemetry.update();
+
         driveForward();
         sleep(5000);
-        while ( < 90){
-        turnToRight();}
+
+        turnToRight();
         sleep(5000);
         strafeleft();
     }
 
     private void driveForward() {
+
         encoderDrive(driveSpeed, 6, 6, 6, 6, 5);
         telemetry.addData("done 1", "done");
     }
 
     private void turnToRight() {
-
-        encoderDrive(driveSpeed, 2, -2, 2, -2, 5);
+        rotate(90, DRIVE_SPEED);
 
         telemetry.addData("done 2", "done");
     }
 
     private void strafeleft() {
-        encoderDrive(driveSpeed, -12, 12, 12, -12, 5);
 
         telemetry.addData("done 3", "done");
+        telemetry.update();
     }
 
     public void encoderDrive(double speed,
@@ -156,14 +170,94 @@ public class Autonsumo extends LinearOpMode {
         }
     }
 
-    private void rotate(int degrees, double power) {
-        resetAngle();
-        if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
-    }
-    private void resetAngle()
-    {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+    private double getAngle() {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
-        globalAngle = 0;
+        Orientation angles = baseRobot.IMU.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
+    private void rotate(int degrees, double power)
+    {
+        // restart imu angle tracking.
+        resetAngle();
+
+        // If input degrees > 359, we cap at 359 with same sign as input.
+        if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
+
+        // start pid controller. PID controller will monitor the turn angle with respect to the
+        // target angle and reduce power as we approach the target angle. We compute the p and I
+        // values based on the input degrees and starting power level. We compute the tolerance %
+        // to yield a tolerance value of about 1 degree.
+        // Overshoot is dependant on the motor and gearing configuration, starting power, weight
+        // of the robot and the on target tolerance.
+
+        pidRotate.reset();
+
+        double p = Math.abs(power/degrees);
+        double i = p / 100.0;
+        pidRotate.setPID(p, i, 0);
+
+        pidRotate.setSetpoint(degrees);
+        pidRotate.setInputRange(0, degrees);
+        pidRotate.setOutputRange(0, power);
+        pidRotate.setTolerance(1.0 / Math.abs(degrees) * 100.0);
+        pidRotate.enable();
+
+        // getAngle() returns + when rotating counter clockwise (left) and - when rotating
+        // clockwise (right).
+
+        // rotate until turn is completed.
+
+        if (degrees < 0)
+        {
+            // On right turn we have to get off zero first.
+            while (opModeIsActive() && getAngle() == 0)
+            {
+            }
+                baseRobot.frontLeft.setPower(power);
+                baseRobot.backLeft.setPower(power);
+                baseRobot.backRight.setPower(-power);
+            baseRobot.frontRight.setPower(-power);
+                sleep(100);
+            }
+
+            do {
+                power = pidRotate.performPID(getAngle()); // power will be - on right turn.
+                baseRobot.frontLeft.setPower(-power);
+                baseRobot.backLeft.setPower(-power);
+                baseRobot.backRight.setPower(power);
+                baseRobot.frontRight.setPower(power);
+
+            } while (opModeIsActive() && !pidRotate.onTarget());
+        } else    // left turn.
+                {
+                power = pidRotate.performPID(getAngle()); // power will be + on left turn.
+                baseRobot.frontLeft.setPower(-power);
+                baseRobot.backLeft.setPower(-power);
+                baseRobot.backRight.setPower(power);
+                baseRobot.frontRight.setPower(power);
+            }while (opModeIsActive() && !pidRotate.onTarget());
+
+
+        private void resetAngle() {
+        lastAngles = baseRobot.IMU.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+
     }
 }
