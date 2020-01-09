@@ -37,6 +37,6 @@ class Hippo implements ITelemetry {
     }
 
     public String getTelemetry() {
-        return null;
+        return String.format("BackSensor: %s, FrontSensor: %s",backSensor.getState(),frontSensor.getState());
     }
 }
