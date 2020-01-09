@@ -27,5 +27,6 @@ interface IRobot {
     void openGripper();
     void closeGripper();
 
+
     Map<String, ITelemetry> getTelemetryMap();
 }

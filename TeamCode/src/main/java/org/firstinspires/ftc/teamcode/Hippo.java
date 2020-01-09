@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -15,6 +16,8 @@ class Hippo implements ITelemetry {
         hippo = hardwareMap.dcMotor.get("hungryhippo");
         backSensor = hardwareMap.digitalChannel.get("backsensor");
         frontSensor = hardwareMap.digitalChannel.get("frontsensor");
+
+        hippo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     void extend () {
@@ -25,7 +28,7 @@ class Hippo implements ITelemetry {
 
     void retract() {
         if (backSensor.getState()) {
-            hippo.setPower(SPEED);
+            hippo.setPower(-SPEED);
         }
     }
 

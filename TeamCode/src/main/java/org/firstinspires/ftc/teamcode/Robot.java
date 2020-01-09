@@ -13,7 +13,7 @@ public class Robot extends BaseRobot implements IRobot {
     private Lift lift;
 
     Robot(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, "CompGryo");
 
         Hippo hippo = new Hippo(hardwareMap);
         this.hippo = hippo;

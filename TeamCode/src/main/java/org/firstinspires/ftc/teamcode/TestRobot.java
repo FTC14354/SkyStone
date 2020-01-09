@@ -4,7 +4,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 class TestRobot extends BaseRobot implements IRobot {
     public TestRobot(HardwareMap hardwareMap) {
-        super(hardwareMap);
+        super(hardwareMap, "BNO055IMUCalibration.json");
+
 
     }
 
