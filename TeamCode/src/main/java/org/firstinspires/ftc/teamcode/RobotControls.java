@@ -86,10 +86,10 @@ class RobotControls {
             robot.moveLeft(speed);
 
         } else if (turn > 0.1){
-            robot.turnLeft(speed);
+            robot.turnRight(speed);
 
         } else if (turn < -0.1){
-            robot.turnRight(speed);
+            robot.turnLeft(speed);
 
         } else if (y > .1) {
             robot.moveForward(speed);
