@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,30 +10,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-import java.sql.Driver;
 import java.util.Map;
 
 @Autonomous
-public class Autonsumo extends LinearOpMode {
-    BaseRobot baseRobot;
-    double driveSpeed = .5;
+public class Auton extends LinearOpMode {
+    private BaseRobot baseRobot;
+    private PIDController           pidRotate;
+    private Orientation lastAngles = new Orientation();
+
+    private double globalAngle;
     private ElapsedTime runtime = new ElapsedTime();
-    static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
-    static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
-    static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+
+    private static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
+    private static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
+    private static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
+    private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double DRIVE_SPEED = 0.6;
-    static final double TURN_SPEED = 0.5;
-    double globalAngle, power = .30, correction, rotation;
-    PIDController pidRotate, pidDrive;
-
-
-    Orientation lastAngles = new Orientation();
-
+    private static final double DRIVE_SPEED = 0.3;
+    private static final double TURN_SPEED = 0.3;
+    private static final double TIMEOUT_SECONDS = 5.0;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         IRobot robot;
         try {
             robot = new Robot(hardwareMap);
@@ -44,6 +41,10 @@ public class Autonsumo extends LinearOpMode {
             telemetry.addLine("Robot:").addData("Robot", "Test Robot");
         }
         baseRobot = (BaseRobot) robot;
+        // Set PID proportional value to start reducing power at about 50 degrees of rotation.
+        // P by itself may stall before turn completed so we add a bit of I (integral) which
+        // causes the PID controller to gently increase power if the turn is not completed.
+        pidRotate = new PIDController(.003, .00003, 0);
 
         Map<String, ITelemetry> telemetryMap = robot.getTelemetryMap();
         for (String t : telemetryMap.keySet()) {
@@ -52,11 +53,7 @@ public class Autonsumo extends LinearOpMode {
                 telemetry.addData(t, telemetryComponent.getTelemetry());
             }
         }
-        pidRotate = new PIDController(0, 0, 0);
-        pidDrive = new PIDController(.05, 0, 0);
 
-        telemetry.addData("Mode", "calibrating...");
-        telemetry.update();
         baseRobot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         baseRobot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         baseRobot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -68,41 +65,27 @@ public class Autonsumo extends LinearOpMode {
         baseRobot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
-        telemetry.addData("1 imu heading", lastAngles.firstAngle);
-        telemetry.addData("2 global heading", globalAngle);
-        telemetry.addData("3 correction", correction);
-        telemetry.addData("4 turn rotation", rotation);
-        telemetry.update();
-
-        driveForward();
-        sleep(5000);
-
-        turnToRight();
-        sleep(5000);
-        strafeleft();
+        driveForward(DRIVE_SPEED);
+        sleep(2000);
+        rotate(90, TURN_SPEED);
+        sleep(2000);
+        strafeleft(DRIVE_SPEED);
+        rotate(-90, TURN_SPEED);
     }
 
-    private void driveForward() {
-
-        encoderDrive(driveSpeed, 6, 6, 6, 6, 5);
+    private void driveForward(double driveSpeed) {
+        encoderDrive(driveSpeed, 6, 6, 6, 6);
         telemetry.addData("done 1", "done");
     }
 
-    private void turnToRight() {
-        rotate(90, DRIVE_SPEED);
-
-        telemetry.addData("done 2", "done");
-    }
-
-    private void strafeleft() {
+    private void strafeleft(double driveSpeed) {
+        encoderDrive(driveSpeed, -6, 6, 6, 6);
 
         telemetry.addData("done 3", "done");
-        telemetry.update();
     }
 
-    public void encoderDrive(double speed,
-                             double FrontleftInches, double FrontrightInches, double BackleftInches, double BackRightInches,
-                             double timeoutS) {
+    private void encoderDrive(double speed,
+                             double frontLeftInches, double frontRightInches, double backLeftInches, double backRightInches) {
         int newFrontLeftTarget;
         int newFrontRightTarget;
         int newBackLeftTarget;
@@ -112,10 +95,10 @@ public class Autonsumo extends LinearOpMode {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            newFrontLeftTarget = baseRobot.frontLeft.getCurrentPosition() + (int) (FrontleftInches * COUNTS_PER_INCH);
-            newFrontRightTarget = baseRobot.frontRight.getCurrentPosition() + (int) (FrontrightInches * COUNTS_PER_INCH);
-            newBackLeftTarget = baseRobot.frontLeft.getCurrentPosition() + (int) (BackleftInches * COUNTS_PER_INCH);
-            newBackRightTarget = baseRobot.frontRight.getCurrentPosition() + (int) (BackRightInches * COUNTS_PER_INCH);
+            newFrontLeftTarget = baseRobot.frontLeft.getCurrentPosition() + (int) (frontLeftInches * COUNTS_PER_INCH);
+            newFrontRightTarget = baseRobot.frontRight.getCurrentPosition() + (int) (frontRightInches * COUNTS_PER_INCH);
+            newBackLeftTarget = baseRobot.frontLeft.getCurrentPosition() + (int) (backLeftInches * COUNTS_PER_INCH);
+            newBackRightTarget = baseRobot.frontRight.getCurrentPosition() + (int) (backRightInches * COUNTS_PER_INCH);
             baseRobot.frontLeft.setTargetPosition(newFrontLeftTarget);
             baseRobot.frontRight.setTargetPosition(newFrontRightTarget);
             baseRobot.backLeft.setTargetPosition(newBackLeftTarget);
@@ -141,7 +124,7 @@ public class Autonsumo extends LinearOpMode {
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
+                    (runtime.seconds() < TIMEOUT_SECONDS) &&
                     (baseRobot.frontLeft.isBusy() && baseRobot.frontRight.isBusy() && baseRobot.backLeft.isBusy() && baseRobot.backRight.isBusy())) {
 
                 // Display it for the driver.
@@ -170,13 +153,28 @@ public class Autonsumo extends LinearOpMode {
         }
     }
 
-    private double getAngle() {
+    /**
+     * Resets the cumulative angle tracking to zero.
+     */
+    private void resetAngle()
+    {
+        lastAngles = baseRobot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        globalAngle = 0;
+    }
+
+    /**
+     * Get current cumulative angle rotation from last reset.
+     * @return Angle in degrees. + = left, - = right from zero point.
+     */
+    private double getAngle()
+    {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
-        Orientation angles = baseRobot.IMU.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation angles = baseRobot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 
@@ -192,31 +190,32 @@ public class Autonsumo extends LinearOpMode {
         return globalAngle;
     }
 
+    /**
+     * Rotate left or right the number of degrees. Does not support turning more than 359 degrees.
+     * @param degrees Degrees to turn, + is left - is right
+     */
     private void rotate(int degrees, double power)
     {
         // restart imu angle tracking.
         resetAngle();
 
-        // If input degrees > 359, we cap at 359 with same sign as input.
+        // if degrees > 359 we cap at 359 with same sign as original degrees.
         if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
 
         // start pid controller. PID controller will monitor the turn angle with respect to the
-        // target angle and reduce power as we approach the target angle. We compute the p and I
-        // values based on the input degrees and starting power level. We compute the tolerance %
-        // to yield a tolerance value of about 1 degree.
-        // Overshoot is dependant on the motor and gearing configuration, starting power, weight
-        // of the robot and the on target tolerance.
+        // target angle and reduce power as we approach the target angle. This is to prevent the
+        // robots momentum from overshooting the turn after we turn off the power. The PID controller
+        // reports onTarget() = true when the difference between turn angle and target angle is within
+        // 1% of target (tolerance) which is about 1 degree. This helps prevent overshoot. Overshoot is
+        // dependant on the motor and gearing configuration, starting power, weight of the robot and the
+        // on target tolerance. If the controller overshoots, it will reverse the sign of the output
+        // turning the robot back toward the setpoint value.
 
         pidRotate.reset();
-
-        double p = Math.abs(power/degrees);
-        double i = p / 100.0;
-        pidRotate.setPID(p, i, 0);
-
         pidRotate.setSetpoint(degrees);
         pidRotate.setInputRange(0, degrees);
         pidRotate.setOutputRange(0, power);
-        pidRotate.setTolerance(1.0 / Math.abs(degrees) * 100.0);
+        pidRotate.setTolerance(1);
         pidRotate.enable();
 
         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
@@ -229,41 +228,52 @@ public class Autonsumo extends LinearOpMode {
             // On right turn we have to get off zero first.
             while (opModeIsActive() && getAngle() == 0)
             {
+                baseRobot.frontLeft.setPower(-power);
+                baseRobot.backLeft.setPower(-power);
+                baseRobot.frontRight.setPower(power);
+                baseRobot.backRight.setPower(power);
+                sleep(100);
+                updateRotationalTelemetry(degrees);
             }
+
+            do
+            {
+                power = pidRotate.performPID(getAngle()); // power will be - on right turn.
                 baseRobot.frontLeft.setPower(power);
                 baseRobot.backLeft.setPower(power);
+                baseRobot.frontRight.setPower(-power);
                 baseRobot.backRight.setPower(-power);
-            baseRobot.frontRight.setPower(-power);
-                sleep(100);
-            }
-
-            do {
-                power = pidRotate.performPID(getAngle()); // power will be - on right turn.
-                baseRobot.frontLeft.setPower(-power);
-                baseRobot.backLeft.setPower(-power);
-                baseRobot.backRight.setPower(power);
-                baseRobot.frontRight.setPower(power);
+                updateRotationalTelemetry(degrees);
 
             } while (opModeIsActive() && !pidRotate.onTarget());
-        } else    // left turn.
-                {
+        }
+        else    // left turn.
+            do
+            {
                 power = pidRotate.performPID(getAngle()); // power will be + on left turn.
-                baseRobot.frontLeft.setPower(-power);
-                baseRobot.backLeft.setPower(-power);
-                baseRobot.backRight.setPower(power);
-                baseRobot.frontRight.setPower(power);
-            }while (opModeIsActive() && !pidRotate.onTarget());
+                baseRobot.frontLeft.setPower(power);
+                baseRobot.backLeft.setPower(power);
+                baseRobot.frontRight.setPower(-power);
+                baseRobot.backRight.setPower(-power);
+                updateRotationalTelemetry(degrees);
 
+            } while (opModeIsActive() && !pidRotate.onTarget());
 
-        private void resetAngle() {
-        lastAngles = baseRobot.IMU.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        // turn the motors off.
+        baseRobot.frontLeft.setPower(0);
+        baseRobot.backLeft.setPower(0);
+        baseRobot.frontRight.setPower(0);
+        baseRobot.backRight.setPower(0);
 
+        // wait for rotation to stop.
+        sleep(500);
 
+        // reset angle tracking on new heading.
+        resetAngle();
     }
-    private void goUp (){
-        liftyboi.setPower(.5);
-    }
-    private void goDown(){
-        liftyboi.setPower(-.5);
+
+    private void updateRotationalTelemetry(int degrees) {
+        telemetry.addData("Rotating:", "Target angle: %s, Current angle: %s", degrees, getAngle());
+        telemetry.update();
     }
 }

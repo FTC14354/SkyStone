@@ -1,48 +1,42 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import java.util.Objects;
-
-public class Hippo {
-    private final Telemetry telemetery;
-    private DigitalChannel backsensor;
-    private DigitalChannel frontsensor;
+class Hippo implements ITelemetry {
     private DcMotor hippo;
-    private double HandsToTheSky = 0;
-    private double Reach = .7;
+    private DigitalChannel backSensor;
+    private DigitalChannel frontSensor;
+    private static final double STOP = 0.0;
+    private static final double SPEED = 0.6;
 
-    public Hippo(HardwareMap hardwareMap, Telemetry telemetry) {
+    Hippo(HardwareMap hardwareMap) {
         hippo = hardwareMap.dcMotor.get("hungryhippo");
-        backsensor = hardwareMap.digitalChannel.get("backsensor");
-        frontsensor = hardwareMap.digitalChannel.get("frontsensor");
-        this.telemetery = telemetry;
+        backSensor = hardwareMap.digitalChannel.get("backsensor");
+        frontSensor = hardwareMap.digitalChannel.get("frontsensor");
+
+        hippo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-
-    public void Extend() {
-        if (frontsensor.getState()) {
-            telemetery.addLine("Hippo fully extended!");
-            EndGame();
-        } else {
-            hippo.setPower(Reach);
+    void extend () {
+        if (frontSensor.getState()) {
+            hippo.setPower(SPEED);
         }
     }
 
-    public void retract() {
-        if (backsensor.getState()) {
-            telemetery.addLine("Hippo fully retracted!");
-            EndGame();
-        } else {
-            hippo.setPower(-Reach);
+    void retract() {
+        if (backSensor.getState()) {
+            hippo.setPower(-SPEED);
         }
     }
 
-    public void EndGame() {
-        hippo.setPower(HandsToTheSky);
+    void stop() {
+        hippo.setPower(STOP);
+    }
+
+    public String getTelemetry() {
+        return String.format("BackSensor: %s, FrontSensor: %s",backSensor.getState(),frontSensor.getState());
     }
 }

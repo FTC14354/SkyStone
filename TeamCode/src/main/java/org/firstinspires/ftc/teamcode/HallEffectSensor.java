@@ -1,10 +1,9 @@
+package org.firstinspires.ftc.teamcode;
 
-        package org.firstinspires.ftc.teamcode;
-
-        import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-        import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-        import com.qualcomm.robotcore.hardware.DcMotor;
-        import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp
 public class HallEffectSensor extends OpMode {
@@ -46,4 +45,3 @@ public class HallEffectSensor extends OpMode {
         hippo.setPower(0);
     }
 }
-
