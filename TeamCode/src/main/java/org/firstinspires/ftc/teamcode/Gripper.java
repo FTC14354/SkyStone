@@ -5,18 +5,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 class Gripper implements ITelemetry {
     private final static float OPEN = 0.0f;
-    private final static float CLOSED = 0.3f;
+    private final static float CLOSED = 1f;
+
 
     private Servo gripper;
 
+
     Gripper(HardwareMap hardwareMap) {
        this.gripper = hardwareMap.servo.get("grippy");
+
     }
+
 
     void setPosition(double position) {
         this.gripper.setPosition(position);
     }
-
     void open() {
         this.gripper.setPosition(OPEN);
     }
@@ -24,9 +27,12 @@ class Gripper implements ITelemetry {
     void close() {
         this.gripper.setPosition(CLOSED);
     }
-
     public String getTelemetry() {
         double position = this.gripper.getPosition();
-        return Double.toString(position);
+
+        return String.format( "position: %s",position);
+
+
+
     }
 }

@@ -15,18 +15,18 @@ import java.sql.Driver;
 import java.util.Map;
 
 @Autonomous
-public class AutonBlueRight extends LinearOpMode {
+public class SlideToTheRight extends LinearOpMode {
     private BaseRobot baseRobot;
     private PIDController pidRotate;
     private Orientation lastAngles = new Orientation();
 //    private final static float OPEN = 0.0f;
 //    private final static float CLOSED = 1f;
-    private final static float UP = 0.0f;
-    private final static float DOWN = .7f;
+//    private final static float UP = 0.0f;
+//    private final static float DOWN = 1f;
 
 //    private Servo gripper;
 //    private Lift lift;
-    private WaffleFoot waffleFoot;
+//    private WaffleFoot waffleFoot;
 
     private double globalAngle;
     private ElapsedTime runtime = new ElapsedTime();
@@ -39,13 +39,13 @@ public class AutonBlueRight extends LinearOpMode {
     private static final double DRIVE_SPEED = 0.3;
     //    private static final double TURN_SPEED = 0.3;
     private static final double TIMEOUT_SECONDS = 5.0;
-    IRobot robot;
+
 //    private double speed = .3;
 
 
     @Override
     public void runOpMode() {
-
+        IRobot robot;
         try {
             robot = new Robot(hardwareMap);
             telemetry.addLine("Robot:").addData("Robot", "Real Robot");
@@ -66,7 +66,6 @@ public class AutonBlueRight extends LinearOpMode {
                 telemetry.addData(t, telemetryComponent.getTelemetry());
             }
         }
-
         baseRobot.frontLeft.getCurrentPosition();
 //        baseRobot.frontRight.getCurrentPosition();
 //        baseRobot.backLeft.getCurrentPosition();
@@ -81,16 +80,11 @@ public class AutonBlueRight extends LinearOpMode {
 //        baseRobot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        baseRobot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        baseRobot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        raiseWaffleFoot();
+
         waitForStart();
-        encoderStrafeRight(DRIVE_SPEED,1);
-        driveForward(DRIVE_SPEED, 65);
+        driveForward(DRIVE_SPEED, 12);
         sleep(100);
-        rotate(-90, DRIVE_SPEED);
-        driveForward(DRIVE_SPEED, 15);
-        dragWaffle ();
-        encoderStrafeRight(DRIVE_SPEED, 30 );
-        driveForward(DRIVE_SPEED, 18);
+
 
     }
 
@@ -131,25 +125,20 @@ public class AutonBlueRight extends LinearOpMode {
 //        this.gripper.setPosition(CLOSED);
 //    }
 //
-    private void dragWaffle() {
-        lowerWaffleFoot();
-        sleep(2000);
-        driveForward(-DRIVE_SPEED,40);
-//        encoderStrafeRight (DRIVE_SPEED, 2);
-        sleep (100);
-//        rotate(90, DRIVE_SPEED);
-        raiseWaffleFoot();
-        sleep(200);
-
-    }
+//    private void dragWaffle() {
+//        lowerWaffleFoot();
+//        driveForward(DRIVE_SPEED);
+//        raiseWaffleFoot();
 //
-    private void lowerWaffleFoot() {
-        robot.waffleDown();
-    }
-
-    private void raiseWaffleFoot() {
-        robot.waffleUp();
-    }
+//    }
+//
+//    private void lowerWaffleFoot() {
+//        this.waffleFoot.setWafflePosition(DOWN);
+//    }
+//
+//    private void raiseWaffleFoot() {
+//        this.waffleFoot.setWafflePosition(UP);
+//    }
 //
     private void driveForward(double driveSpeed, double target) {
         baseRobot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -196,10 +185,6 @@ public class AutonBlueRight extends LinearOpMode {
 
         encoderStrafeRight(driveSpeed, 12);
     }
-    private void strafeLeft (double driveSpeed) {
-
-        encoderStrafeLeft(driveSpeed, 3);
-    }
 
     private void encoderStrafeLeft(double speed, double target) {
         target *= COUNTS_PER_INCH;
@@ -224,7 +209,7 @@ public class AutonBlueRight extends LinearOpMode {
 
         target *= COUNTS_PER_INCH;
 
-        while (currentRobotPosition() < target && opModeIsActive()) {
+        while (currentRobotPosition() < target) {
             baseRobot.frontLeft.setPower((speed));
             baseRobot.frontRight.setPower((-speed));
             baseRobot.backRight.setPower((speed));
@@ -239,7 +224,7 @@ public class AutonBlueRight extends LinearOpMode {
 
 
     private double currentRobotPosition() {
-        return Math.abs((baseRobot.frontLeft.getCurrentPosition()));
+        return (baseRobot.frontLeft.getCurrentPosition());
     }
 
 
@@ -250,11 +235,11 @@ public class AutonBlueRight extends LinearOpMode {
 
         target *= COUNTS_PER_INCH;
 
-        while (currentRobotPosition() < target && opModeIsActive()) {
-            baseRobot.frontLeft.setPower((speed));
-            baseRobot.frontRight.setPower((speed));
-            baseRobot.backRight.setPower((speed));
-            baseRobot.backLeft.setPower((speed));
+        while (currentRobotPosition() < target) {
+            baseRobot.frontLeft.setPower(Math.abs(speed));
+            baseRobot.frontRight.setPower(Math.abs(speed));
+            baseRobot.backRight.setPower(Math.abs(speed));
+            baseRobot.backLeft.setPower(Math.abs(speed));
 
         }
 
@@ -444,9 +429,6 @@ public class AutonBlueRight extends LinearOpMode {
 
     private void updateRotationalTelemetry(int degrees) {
         telemetry.addData("Rotating:", "Target angle: %s, Current angle: %s", degrees, getAngle());
-        telemetry.addData("Encodervalues", "Encoder Fl : %s",
-
-                ((BaseRobot) robot).frontLeft.getCurrentPosition());
         telemetry.update();
     }
 }

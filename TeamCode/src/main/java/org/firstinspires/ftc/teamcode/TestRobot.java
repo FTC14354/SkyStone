@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 class TestRobot extends BaseRobot implements IRobot {
+    private WaffleFoot waffleFoot;
     public TestRobot(HardwareMap hardwareMap) {
         super(hardwareMap, "BNO055IMUCalibration.json");
 
-
+        WaffleFoot waffleFoot = new WaffleFoot(hardwareMap);
+        this.waffleFoot = waffleFoot;
+        telemetryMap.put("waffleFoot", waffleFoot);
     }
 
     @Override
@@ -53,6 +56,16 @@ class TestRobot extends BaseRobot implements IRobot {
     public void closeGripper() {
 
     }
+    @Override
+    public void setWafflePosition (double wafflePosition){
 
+    }
+    @Override
+    public void waffleUp (){
+    }
+    @Override
+    public void waffleDown (){
+
+    }
 
 }

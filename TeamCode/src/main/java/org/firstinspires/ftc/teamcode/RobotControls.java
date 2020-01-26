@@ -14,6 +14,14 @@ class RobotControls {
         this.robot = robot;
     }
 
+    void waffleControls (boolean controlValue){
+        if (controlValue){
+            robot.waffleDown();
+        } else{
+            robot.waffleUp();
+        }
+    }
+
     void gripperControls(float controlValue) {
         double almostThere = 0.7;
         double ittyBittyBit = 0.3;
@@ -39,9 +47,9 @@ class RobotControls {
             speed = LIFT_POWER_SLOW;
         }
 
-        if (controlValue > .1) {
+        if (controlValue < -.1) {
             robot.raiseLift(speed);
-        } else if (controlValue < -.1) {
+        } else if (controlValue  > .1) {
             robot.lowerLift(speed);
         } else {
             robot.stopLift();
@@ -85,10 +93,10 @@ class RobotControls {
         } else if (x < -0.1) {
             robot.moveLeft(speed);
 
-        } else if (turn > 0.1){
+        } else if (turn < -0.1){
             robot.turnRight(speed);
 
-        } else if (turn < -0.1){
+        } else if (turn > 0.1 ){
             robot.turnLeft(speed);
 
         } else if (y > .1) {

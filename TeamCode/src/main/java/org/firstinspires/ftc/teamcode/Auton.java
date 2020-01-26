@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -17,11 +18,19 @@ public class Auton extends LinearOpMode {
     private BaseRobot baseRobot;
     private PIDController           pidRotate;
     private Orientation lastAngles = new Orientation();
+    private final static float OPEN = 0.0f;
+    private final static float CLOSED = 1f;
+    private final static float UP = 0.0f;
+    private final static float DOWN = 1f;
+
+    private Servo gripper;
+    private Lift lift;
+    private WaffleFoot waffleFoot;
 
     private double globalAngle;
     private ElapsedTime runtime = new ElapsedTime();
 
-    private static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
+    private static final double COUNTS_PER_MOTOR_REV = 537.6;    // eg: TETRIX Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
     private static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -29,6 +38,8 @@ public class Auton extends LinearOpMode {
     private static final double DRIVE_SPEED = 0.3;
     private static final double TURN_SPEED = 0.3;
     private static final double TIMEOUT_SECONDS = 5.0;
+
+    private double speed = .3;
 
     @Override
     public void runOpMode() {
@@ -71,15 +82,54 @@ public class Auton extends LinearOpMode {
         sleep(2000);
         strafeleft(DRIVE_SPEED);
         rotate(-90, TURN_SPEED);
-    }
+        grabblock();
+        dragWaffle();
 
+    }
+private void grabblock (){
+        raiselift (speed);
+        sleep(50);
+        openGrip ();
+        lowerlift (speed);
+        sleep (30);
+        closeGrip ();
+}
+private void raiselift (double speed){
+
+        lift.raise(speed);
+
+}
+private void lowerlift (double speed){
+
+        lift.lower(speed);
+
+}
+private void openGrip (){
+        this.gripper.setPosition(OPEN);
+
+}
+private void closeGrip (){
+this.gripper.setPosition(CLOSED);
+}
+private void dragWaffle(){
+        lowerWaffleFoot();
+        driveForward(DRIVE_SPEED);
+        raiseWaffleFoot ();
+
+}
+private void lowerWaffleFoot(){
+        this.waffleFoot.setWafflePosition(DOWN);
+}
+private void raiseWaffleFoot(){
+        this.waffleFoot.setWafflePosition(UP);
+}
     private void driveForward(double driveSpeed) {
         encoderDrive(driveSpeed, 6, 6, 6, 6);
         telemetry.addData("done 1", "done");
     }
 
     private void strafeleft(double driveSpeed) {
-        encoderDrive(driveSpeed, -6, 6, 6, 6);
+        encoderDrive(driveSpeed, -6, 6, 6, -6);
 
         telemetry.addData("done 3", "done");
     }
@@ -158,7 +208,7 @@ public class Auton extends LinearOpMode {
      */
     private void resetAngle()
     {
-        lastAngles = baseRobot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        lastAngles = baseRobot.IMU.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         globalAngle = 0;
     }
@@ -174,7 +224,7 @@ public class Auton extends LinearOpMode {
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
-        Orientation angles = baseRobot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation angles = baseRobot.IMU.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 

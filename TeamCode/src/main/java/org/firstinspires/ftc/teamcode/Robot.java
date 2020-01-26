@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /*
     Extend the base robot (motion) with a Gripper, Lift, and Hippo
@@ -11,6 +12,7 @@ public class Robot extends BaseRobot implements IRobot {
     private Gripper gripper;
     private Hippo hippo;
     private Lift lift;
+    public WaffleFoot waffleFoot;
 
     Robot(HardwareMap hardwareMap) {
         super(hardwareMap, "CompGryo");
@@ -24,6 +26,9 @@ public class Robot extends BaseRobot implements IRobot {
         Gripper gripper = new Gripper(hardwareMap);
         this.gripper = gripper;
         telemetryMap.put("gripper", gripper);
+        WaffleFoot waffleFoot = new WaffleFoot(hardwareMap);
+        this.waffleFoot = waffleFoot;
+                telemetryMap.put("waffleFoot", waffleFoot);
     }
 
     public void raiseLift(double speed) {
@@ -61,4 +66,11 @@ public class Robot extends BaseRobot implements IRobot {
     public void closeGripper() {
         gripper.close();
     }
+
+
+    public void setWafflePosition(double wafflePosition) {
+        waffleFoot.setWafflePosition(wafflePosition);
+    }
+    public void waffleUp (){waffleFoot.up();}
+    public void waffleDown (){waffleFoot.down();}
 }
