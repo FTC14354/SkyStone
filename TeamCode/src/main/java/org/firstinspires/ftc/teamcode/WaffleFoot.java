@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class WaffleFoot implements ITelemetry {
     private final static float UP = 0.0f;
-    private final static float DOWN = .7f;
+    private final static float DOWN = .5f;
 
     private Servo waffleFoot;
 

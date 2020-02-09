@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -11,13 +12,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-import java.sql.Driver;
 import java.util.Map;
 
+import static android.os.SystemClock.sleep;
 import static java.lang.Math.abs;
 
-@Autonomous
-public class Auton extends LinearOpMode {
+public class BaseAuton {
+    private LinearOpMode parent;
     private BaseRobot baseRobot;
     private PIDController pidRotate;
     private Orientation lastAngles = new Orientation();
@@ -38,22 +39,23 @@ public class Auton extends LinearOpMode {
     private static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
-    private static final double DRIVE_SPEED = 0.3;
+    static final double DRIVE_SPEED = 0.3;
     //    private static final double TURN_SPEED = 0.3;
     private static final double TIMEOUT_SECONDS = 5.0;
 
-//    private double speed = .3;
+    //    private double speed = .3;
+    IRobot robot;
 
+    BaseAuton(LinearOpMode parent) {
+        this.parent = parent;
 
-    @Override
-    public void runOpMode() {
         IRobot robot;
         try {
-            robot = new Robot(hardwareMap);
-            telemetry.addLine("Robot:").addData("Robot", "Real Robot");
+            robot = new Robot(parent.hardwareMap);
+            parent.telemetry.addLine("Robot:").addData("Robot", "Real Robot");
         } catch (Exception ex) {
-            robot = new TestRobot(hardwareMap);
-            telemetry.addLine("Robot:").addData("Robot", "Test Robot");
+            robot = new TestRobot(parent.hardwareMap);
+            parent.telemetry.addLine("Robot:").addData("Robot", "Test Robot");
         }
         baseRobot = (BaseRobot) robot;
         // Set PID proportional value to start reducing power at about 50 degrees of rotation.
@@ -65,14 +67,13 @@ public class Auton extends LinearOpMode {
         for (String t : telemetryMap.keySet()) {
             ITelemetry telemetryComponent = telemetryMap.get(t);
             if (telemetryComponent != null) {
-                telemetry.addData(t, telemetryComponent.getTelemetry());
+                parent.telemetry.addData(t, telemetryComponent.getTelemetry());
             }
         }
-        baseRobot.frontLeft.getCurrentPosition();
-        baseRobot.frontRight.getCurrentPosition();
-        baseRobot.backLeft.getCurrentPosition();
-        baseRobot.backRight.getCurrentPosition();
+        parent.telemetry = new MultipleTelemetry(parent.telemetry, FtcDashboard.getInstance().getTelemetry());
+    }
 
+    void stopAndResetAll() {
         baseRobot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         baseRobot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         baseRobot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -82,16 +83,6 @@ public class Auton extends LinearOpMode {
         baseRobot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         baseRobot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         baseRobot.backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        waitForStart();
-        driveForward(DRIVE_SPEED, 32);
-        sleep(1000);
-        rotate(-90, DRIVE_SPEED);
-        sleep(200);
-        driveForward(DRIVE_SPEED, 22);
-        sleep(200);
-    strafeRight(DRIVE_SPEED);
-
 
     }
 
@@ -132,22 +123,27 @@ public class Auton extends LinearOpMode {
 //        this.gripper.setPosition(CLOSED);
 //    }
 //
-//    private void dragWaffle() {
-//        lowerWaffleFoot();
-//        driveForward(DRIVE_SPEED);
-//        raiseWaffleFoot();
-//
-//    }
-//
-//    private void lowerWaffleFoot() {
-//        this.waffleFoot.setWafflePosition(DOWN);
-//    }
-//
-//    private void raiseWaffleFoot() {
-//        this.waffleFoot.setWafflePosition(UP);
-//    }
-//
-    private void driveForward(double driveSpeed, double target) {
+    void dragWaffle() {
+        lowerWaffleFoot();
+        sleep(2000);
+        driveForward(-DRIVE_SPEED, 18);
+        encoderStrafeLeft(DRIVE_SPEED, 3);
+        rotate(-90, DRIVE_SPEED);
+        raiseWaffleFoot();
+        sleep(200);
+
+    }
+
+    private void lowerWaffleFoot() {
+        robot.waffleDown();
+    }
+
+    void raiseWaffleFoot() {
+        robot.waffleUp();
+    }
+
+    //
+    void driveForward(double driveSpeed, double target) {
         baseRobot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         baseRobot.frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         baseRobot.backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -194,12 +190,8 @@ public class Auton extends LinearOpMode {
 //
 //    }
 
-    private void strafeRight(double driveSpeed) {
 
-        encoderStrafeRight(driveSpeed, 12);
-    }
-
-    private void encoderStrafeLeft(double speed, double target) {
+    void encoderStrafeLeft(double speed, double target) {
         target *= COUNTS_PER_INCH;
 
         while (currentRobotPosition() > target) {
@@ -215,7 +207,7 @@ public class Auton extends LinearOpMode {
         baseRobot.backRight.setPower(0);
     }
 
-    private void encoderStrafeRight(double speed
+    void encoderStrafeRight(double speed
             , double target
 
     ) {
@@ -243,16 +235,14 @@ public class Auton extends LinearOpMode {
 
     private double currentRobotPosition() {
         return (
-                (  (Math.abs(baseRobot.frontLeft.getCurrentPosition()))+
-                        (Math.abs(baseRobot.frontRight.getCurrentPosition()) )+
-                                 (Math.abs(baseRobot.backLeft.getCurrentPosition()))+
-                                 (Math.abs(baseRobot.backRight.getCurrentPosition())))/4);
+                ((Math.abs(baseRobot.frontLeft.getCurrentPosition())) +
+                        (Math.abs(baseRobot.frontRight.getCurrentPosition())) +
+                        (Math.abs(baseRobot.backLeft.getCurrentPosition())) +
+                        (Math.abs(baseRobot.backRight.getCurrentPosition()))) / 4.0);
     }
 
 
-    private void encoderDrive(double speed
-            , double target
-    ) {
+    private void encoderDrive(double speed, double target) {
 
         target *= COUNTS_PER_INCH;
 
@@ -264,38 +254,7 @@ public class Auton extends LinearOpMode {
 
         }
 
-//        int newFrontLeftTarget;
-//        int newFrontRightTarget;
-//        int newBackLeftTarget;
-//        int newBackRightTarget;
 
-        // Ensure that the opmode is still active
-//        if (opModeIsActive()) {
-//
-//            // Determine new target position, and pass to motor controller
-//            newFrontLeftTarget = baseRobot.frontLeft.getCurrentPosition() + (int) (frontLeftInches * COUNTS_PER_INCH);
-//            newFrontRightTarget = baseRobot.frontRight.getCurrentPosition() + (int) (frontRightInches * COUNTS_PER_INCH);
-//            newBackLeftTarget = baseRobot.backLeft.getCurrentPosition() + (int) (backLeftInches * COUNTS_PER_INCH);
-//            newBackRightTarget = baseRobot.backRight.getCurrentPosition() + (int) (backRightInches * COUNTS_PER_INCH);
-//
-//
-//            baseRobot.frontLeft.setTargetPosition(newFrontLeftTarget);
-//            baseRobot.frontRight.setTargetPosition(newFrontRightTarget);
-//            baseRobot.backLeft.setTargetPosition(newBackLeftTarget);
-//            baseRobot.backRight.setTargetPosition(newBackRightTarget);
-//
-//            // Turn On RUN_TO_POSITION
-//            baseRobot.frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            baseRobot.frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            baseRobot.backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            baseRobot.backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//            // reset the timeout time and start motion.
-//            runtime.reset();
-//            baseRobot.frontLeft.setPower(Math.abs(speed));
-//            baseRobot.frontRight.setPower(Math.abs(speed));
-//            baseRobot.backRight.setPower(Math.abs(speed));
-//            baseRobot.backLeft.setPower(Math.abs(speed));
 
         // keep looping while we are still active, and there is time left, and both motors are running.
         // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -303,19 +262,19 @@ public class Auton extends LinearOpMode {
         // always end the motion as soon as possible.
         // However, if you require that BOTH motors have finished their moves before the robot continues
         // onto the next step, use (isBusy() || isBusy()) in the loop test.
-        while (opModeIsActive() &&
+        while (parent.opModeIsActive() &&
                 (runtime.seconds() < TIMEOUT_SECONDS) &&
                 (baseRobot.frontLeft.isBusy() && baseRobot.frontRight.isBusy() && baseRobot.backLeft.isBusy() && baseRobot.backRight.isBusy())) {
 
             // Display it for the driver.
 //                telemetry.addData("Path1", "Running to %7d :%7d", newBackLeftTarget, newBackRightTarget, newFrontLeftTarget, newFrontRightTarget);
-            telemetry.addData("Path2", "Running at %7d :%7d",
+            parent.telemetry.addData("Path2", "Running at %7d :%7d",
                     baseRobot.frontLeft.getCurrentPosition(),
                     baseRobot.frontRight.getCurrentPosition());
             baseRobot.backRight.getCurrentPosition();
             baseRobot.backLeft.getCurrentPosition();
-            telemetry.addData("value", "Current: %s", currentRobotPosition());
-            telemetry.update();
+            parent.telemetry.addData("value", "Current: %s", currentRobotPosition());
+            parent.telemetry.update();
         }
 
         // Stop all motion;
@@ -330,7 +289,7 @@ public class Auton extends LinearOpMode {
         baseRobot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         baseRobot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        sleep(250);   // optional pause after each move
+        parent.sleep(250);   // optional pause after each move
 //        }
     }
 
@@ -376,7 +335,7 @@ public class Auton extends LinearOpMode {
      *
      * @param degrees Degrees to turn, + is left - is right
      */
-    private void rotate(int degrees, double power) {
+    public void rotate(int degrees, double power) {
         // restart imu angle tracking.
         resetAngle();
 
@@ -411,12 +370,12 @@ public class Auton extends LinearOpMode {
 
         if (degrees < 0) {
             // On right turn we have to get off zero first.
-            while (opModeIsActive() && getAngle() == 0) {
+            while (parent.opModeIsActive() && getAngle() == 0) {
                 baseRobot.frontLeft.setPower(-power);
                 baseRobot.backLeft.setPower(-power);
                 baseRobot.frontRight.setPower(power);
                 baseRobot.backRight.setPower(power);
-                sleep(100);
+                parent.sleep(100);
                 updateRotationalTelemetry(degrees);
             }
 
@@ -428,7 +387,7 @@ public class Auton extends LinearOpMode {
                 baseRobot.backRight.setPower(-power);
                 updateRotationalTelemetry(degrees);
 
-            } while (opModeIsActive() && !pidRotate.onTarget());
+            } while (parent.opModeIsActive() && !pidRotate.onTarget());
         } else    // left turn.
             do {
                 power = pidRotate.performPID(getAngle()); // power will be + on left turn.
@@ -438,7 +397,7 @@ public class Auton extends LinearOpMode {
                 baseRobot.backRight.setPower(-power);
                 updateRotationalTelemetry(degrees);
 
-            } while (opModeIsActive() && !pidRotate.onTarget());
+            } while (parent.opModeIsActive() && !pidRotate.onTarget());
 
         // turn the motors off.
         baseRobot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -447,15 +406,15 @@ public class Auton extends LinearOpMode {
         baseRobot.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // wait for rotation to stop.
-        sleep(500);
+        parent.sleep(500);
 
         // reset angle tracking on new heading.
         resetAngle();
     }
 
     private void updateRotationalTelemetry(int degrees) {
-        telemetry.addData("Rotating:", "Target angle: %s, Current angle: %s", degrees, getAngle());
-        telemetry.addData ("Current Position",  "Current Position: %s", currentRobotPosition());
-        telemetry.update();
+        parent.telemetry.addData("Rotating:", "Target angle: %s, Current angle: %s", degrees, getAngle());
+        parent.telemetry.addData("Current Position", "Current Position: %s", currentRobotPosition());
+        parent.telemetry.update();
     }
 }

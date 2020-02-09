@@ -75,19 +75,19 @@ class RobotControls {
             speed = MOVE_FAST;
         }
 
-        if (x < -0.1 && y > 0.1) {
-            robot.moveNW(speed);
+//        if (x < -0.3 && y > 0.3) {
+//            robot.moveNW(speed);
+//
+//        } else if (x < -0.3 && y < -0.3) {
+//            robot.moveSW(speed);
+//
+//        } else if (x > 0.3 && y < -0.3){
+//            robot.moveSE(speed);
+//
+//        } else if (x > 0.3 && y > 0.3) {
+//            robot.moveNE(speed);
 
-        } else if (x < -0.1 && y < -0.1) {
-            robot.moveSW(speed);
-
-        } else if (x > 0.1 && y < -0.1){
-            robot.moveSE(speed);
-
-        } else if (x > 0.1 && y > 0.1) {
-            robot.moveNE(speed);
-
-        } else if (x > 0.1) {
+          if (x > 0.1) {
             robot.moveRight(speed);
 
         } else if (x < -0.1) {
