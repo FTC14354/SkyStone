@@ -124,12 +124,12 @@ public class BaseAuton {
 //    }
 //
     void dragWaffle() {
-        lowerWaffleFoot();
+//        lowerWaffleFoot();
         sleep(2000);
         driveForward(-DRIVE_SPEED, 18);
         encoderStrafeLeft(DRIVE_SPEED, 3);
         rotate(-90, DRIVE_SPEED);
-        raiseWaffleFoot();
+//        raiseWaffleFoot();
         sleep(200);
 
     }
@@ -246,11 +246,11 @@ public class BaseAuton {
 
         target *= COUNTS_PER_INCH;
 
-        while (currentRobotPosition() < target) {
-            baseRobot.frontLeft.setPower(abs(speed));
-            baseRobot.frontRight.setPower(abs(speed));
-            baseRobot.backRight.setPower(abs(speed));
-            baseRobot.backLeft.setPower(abs(speed));
+        while (currentRobotPosition() < abs(target)) {
+            baseRobot.frontLeft.setPower((speed));
+            baseRobot.frontRight.setPower((speed));
+            baseRobot.backRight.setPower((speed));
+            baseRobot.backLeft.setPower((speed));
 
         }
 

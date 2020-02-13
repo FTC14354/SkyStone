@@ -15,13 +15,14 @@ public class AutonRedLeft extends LinearOpMode {
         ba.stopAndResetAll();
 
         waitForStart();
-        ba.encoderStrafeLeft(DRIVE_SPEED, 1);
-        ba.driveForward(DRIVE_SPEED, 65);
+//        ba.encoderStrafeLeft(DRIVE_SPEED, 3);
+        ba.encoderStrafeRight(DRIVE_SPEED, 25);
+//        ba.driveForward(DRIVE_SPEED, 40);
         sleep(100);
-        ba.rotate(90, DRIVE_SPEED);
-        ba.driveForward(DRIVE_SPEED, 15);
+//        ba.rotate(90, DRIVE_SPEED);
+        ba.driveForward(DRIVE_SPEED, 25);
         ba.dragWaffle();
-        ba.driveForward(-DRIVE_SPEED, 48);
+        ba.driveForward(-DRIVE_SPEED, 40);
 
 
     }

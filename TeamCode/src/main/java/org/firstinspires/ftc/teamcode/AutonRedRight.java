@@ -18,10 +18,10 @@ public class AutonRedRight extends LinearOpMode {
         ba.stopAndResetAll();
 
         waitForStart();
-        ba.driveForward(DRIVE_SPEED, 32);
+        ba.driveForward(DRIVE_SPEED, 30);
         sleep(100);
         ba.rotate(-90, DRIVE_SPEED);
-        ba.driveForward(DRIVE_SPEED, 22);
+        ba.driveForward(DRIVE_SPEED, 33);
 
 
 
