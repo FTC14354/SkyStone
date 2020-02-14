@@ -9,6 +9,7 @@ import java.util.Map;
 public class Teleop extends OpMode {
     private RobotControls robotControls;
     private IRobot robot;
+
     @Override
     public void init() {
         // TODO Use the config name instead of relying on the exception
@@ -38,12 +39,15 @@ public class Teleop extends OpMode {
         robotControls.hippoControls(gamepad2.right_stick_y);
         robotControls.liftControls(gamepad2.left_stick_y, gamepad2.left_bumper);
         robotControls.gripperControls(gamepad2.right_trigger);
+        robotControls.waffleControls (gamepad2.a);
 
         Map<String, ITelemetry> telemetryMap = robot.getTelemetryMap();
         for (String t : telemetryMap.keySet()) {
             ITelemetry telemetryComponent = telemetryMap.get(t);
             if (telemetryComponent != null) {
                 telemetry.addData(t, telemetryComponent.getTelemetry());
+                telemetry.addData("Encodervalues", "Encoder Fl : %s", "Encoder Fr: %d", "Encoder Bl: %f", "Encoder br: %g", ((BaseRobot) robot).frontLeft.getCurrentPosition(), ((BaseRobot) robot).frontRight.getCurrentPosition(), ((BaseRobot) robot).backLeft.getCurrentPosition(), ((BaseRobot) robot).backRight.getCurrentPosition());
+                telemetry.update();
             }
         }
     }

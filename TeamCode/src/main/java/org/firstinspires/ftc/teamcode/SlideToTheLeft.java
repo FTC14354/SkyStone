@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -15,32 +15,32 @@ import java.sql.Driver;
 import java.util.Map;
 
 @Autonomous
-public class Autonsumo extends LinearOpMode {
+public class SlideToTheLeft extends LinearOpMode {
     private BaseRobot baseRobot;
     private PIDController pidRotate;
     private Orientation lastAngles = new Orientation();
-    private final static float OPEN = 0.0f;
-    private final static float CLOSED = 1f;
-    private final static float UP = 0.0f;
-    private final static float DOWN = 1f;
+//    private final static float OPEN = 0.0f;
+//    private final static float CLOSED = 1f;
+//    private final static float UP = 0.0f;
+//    private final static float DOWN = 1f;
 
-    private Servo gripper;
-    private Lift lift;
-    private WaffleFoot waffleFoot;
+//    private Servo gripper;
+//    private Lift lift;
+//    private WaffleFoot waffleFoot;
 
     private double globalAngle;
     private ElapsedTime runtime = new ElapsedTime();
 
-    private static final double COUNTS_PER_MOTOR_REV = 537.6;    // eg: TETRIX Motor Encoder
+    private static final double COUNTS_PER_MOTOR_REV = 350;    // eg: TETRIX Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
     private static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
     private static final double DRIVE_SPEED = 0.3;
-    private static final double TURN_SPEED = 0.3;
+    //    private static final double TURN_SPEED = 0.3;
     private static final double TIMEOUT_SECONDS = 5.0;
 
-    private double speed = .3;
+//    private double speed = .3;
 
 
     @Override
@@ -76,102 +76,160 @@ public class Autonsumo extends LinearOpMode {
 //        baseRobot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        baseRobot.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        baseRobot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        baseRobot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        baseRobot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        baseRobot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        baseRobot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
-        baseRobot.backLeft.setPower(DRIVE_SPEED);
-        sleep(1000);
-        baseRobot.backLeft.setPower(0);
-        baseRobot.backRight.setPower(DRIVE_SPEED);
-        sleep(1000);
-        baseRobot.backRight.setPower(0);
-        baseRobot.frontRight.setPower(DRIVE_SPEED);
-        sleep(1000);
-        baseRobot.frontRight.setPower(0);
-        baseRobot.frontLeft.setPower(DRIVE_SPEED);
-        sleep(1000);
+        driveForward(DRIVE_SPEED, 12);
+        sleep(100);
+
+
+    }
+
+    //    private void grabblock() {
+//        raiselift(speed);
+//        openGrip();
+//        lowerlift(speed);
+//        sleep(30);
+//        closeGrip();
+//    }
+//
+//    private void placeBlock() {
+//        raiselift(speed);
+//        sleep(50);
+//        openGrip();
+//        lowerlift(speed);
+//        sleep(30);
+//
+//    }
+//
+//    private void raiselift(double speed) {
+//
+//
+//    }
+//
+//    private void lowerlift(double speed) {
+//
+//        lift.lower(speed);
+//
+//    }
+//
+//    private void openGrip() {
+//        this.gripper.setPosition(OPEN);
+//
+//    }
+//
+//    private void closeGrip() {
+//        this.gripper.setPosition(CLOSED);
+//    }
+//
+//    private void dragWaffle() {
+//        lowerWaffleFoot();
+//        driveForward(DRIVE_SPEED);
+//        raiseWaffleFoot();
+//
+//    }
+//
+//    private void lowerWaffleFoot() {
+//        this.waffleFoot.setWafflePosition(DOWN);
+//    }
+//
+//    private void raiseWaffleFoot() {
+//        this.waffleFoot.setWafflePosition(UP);
+//    }
+//
+    private void driveForward(double driveSpeed, double target) {
+        baseRobot.frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        encoderDrive(driveSpeed, target);
+        baseRobot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+    }
+
+
+//    private void strafeLeft(double driveSpeed, double target) {
+//        getAngle();
+//
+//        while (opModeIsActive() && (currentRobotPosition() > target)) {
+//
+//            if (globalAngle < -.1) {
+//                baseRobot.frontLeft.setPower((-.4));
+//                baseRobot.frontRight.setPower(.3);
+//                baseRobot.backRight.setPower((-.4));
+//                baseRobot.backLeft.setPower((.3));
+//                updateRotationalTelemetry((int) globalAngle);
+//            }else if (globalAngle > .1){
+//                baseRobot.frontLeft.setPower((-.3));
+//                baseRobot.frontRight.setPower(.4);
+//                baseRobot.backRight.setPower((-.3));
+//                baseRobot.backLeft.setPower((.4));
+//                updateRotationalTelemetry((int) globalAngle);
+//            }else if ( -.1 <globalAngle && globalAngle < .1){
+//                encoderStrafeLeft(driveSpeed, -1);
+//                updateRotationalTelemetry((int) globalAngle);
+//            }  else {updateRotationalTelemetry((int) globalAngle);
+//                baseRobot.frontLeft.getCurrentPosition();
+//            }
+//
+//
+//
+//
+//
+//        }
+//
+//
+//    }
+
+    private void strafeRight(double driveSpeed) {
+
+        encoderStrafeRight(driveSpeed, 12);
+    }
+
+    private void encoderStrafeLeft(double speed, double target) {
+        target *= COUNTS_PER_INCH;
+
+        while (currentRobotPosition() > target) {
+            baseRobot.frontLeft.setPower((-speed));
+            baseRobot.frontRight.setPower(speed);
+            baseRobot.backRight.setPower((-speed));
+            baseRobot.backLeft.setPower((speed));
+
+        }
         baseRobot.frontLeft.setPower(0);
-
+        baseRobot.frontRight.setPower(0);
+        baseRobot.backLeft.setPower(0);
+        baseRobot.backRight.setPower(0);
     }
 
-    private void grabblock() {
-        raiselift(speed);
-        sleep(50);
-        openGrip();
-        lowerlift(speed);
-        sleep(30);
-        closeGrip();
+    private void encoderStrafeRight(double speed
+            , double target
+
+    ) {
+
+        target *= COUNTS_PER_INCH;
+
+        while (currentRobotPosition() < target) {
+            baseRobot.frontLeft.setPower((speed));
+            baseRobot.frontRight.setPower((-speed));
+            baseRobot.backRight.setPower((speed));
+            baseRobot.backLeft.setPower((-speed));
+
+        }
+        baseRobot.frontLeft.setPower(0);
+        baseRobot.frontRight.setPower(0);
+        baseRobot.backLeft.setPower(0);
+        baseRobot.backRight.setPower(0);
     }
 
-    private void placeBlock() {
-        raiselift(speed);
-        sleep(50);
-        openGrip();
-        lowerlift(speed);
-        sleep(30);
 
+    private double currentRobotPosition() {
+        return (baseRobot.frontLeft.getCurrentPosition());
     }
-
-    private void raiselift(double speed) {
-
-        lift.raise(speed);
-
-    }
-
-    private void lowerlift(double speed) {
-
-        lift.lower(speed);
-
-    }
-
-    private void openGrip() {
-        this.gripper.setPosition(OPEN);
-
-    }
-
-    private void closeGrip() {
-        this.gripper.setPosition(CLOSED);
-    }
-
-    private void dragWaffle() {
-        lowerWaffleFoot();
-        driveForward(DRIVE_SPEED);
-        raiseWaffleFoot();
-
-    }
-
-    private void lowerWaffleFoot() {
-        this.waffleFoot.setWafflePosition(DOWN);
-    }
-
-    private void raiseWaffleFoot() {
-        this.waffleFoot.setWafflePosition(UP);
-    }
-
-    private void driveForward(double driveSpeed) {
-        encoderDrive(driveSpeed, 6);
-        telemetry.addData("done 1", "done");
-    }
-
-    private void strafeleft(double driveSpeed) {
-
-    }
-
-    private void straferight(double driveSpeed) {
-
-
-    }
-    private double currentRobotPosition (){
-        return  (baseRobot.frontLeft.getCurrentPosition()) ;
-    }
-
 
 
     private void encoderDrive(double speed
-            ,double target
+            , double target
 
     ) {
 
@@ -235,7 +293,7 @@ public class Autonsumo extends LinearOpMode {
                     baseRobot.frontRight.getCurrentPosition());
             baseRobot.backRight.getCurrentPosition();
             baseRobot.backLeft.getCurrentPosition();
-            telemetry.addData ("value", "Current: %s", currentRobotPosition());
+            telemetry.addData("value", "Current: %s", currentRobotPosition());
             telemetry.update();
         }
 
@@ -247,14 +305,13 @@ public class Autonsumo extends LinearOpMode {
 
 //             Turn off RUN_TO_POSITION
         baseRobot.frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        baseRobot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        baseRobot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        baseRobot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            baseRobot.frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            baseRobot.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            baseRobot.backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         sleep(250);   // optional pause after each move
 //        }
     }
-
 
 
     /**
@@ -373,11 +430,5 @@ public class Autonsumo extends LinearOpMode {
     private void updateRotationalTelemetry(int degrees) {
         telemetry.addData("Rotating:", "Target angle: %s, Current angle: %s", degrees, getAngle());
         telemetry.update();
-    }
-    private void goUp (){
-        liftyboi.setPower(.5);
-    }
-    private void goDown(){
-        liftyboi.setPower(-.5);
     }
 }

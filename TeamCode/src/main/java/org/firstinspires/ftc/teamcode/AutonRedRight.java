@@ -2,23 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
+
+
+import static org.firstinspires.ftc.teamcode.BaseAuton.DRIVE_SPEED;
 
 @Autonomous
 public class AutonRedRight extends LinearOpMode {
-    private DcMotor frontleft, frontright, backleft, backright;
 
-    private double DrivePower = .6;
-    private double RoadWorkAhead = .3;
-    private double IAmSpeed = .8;
-    private double open = 0;
-    private double WoAhweareHalfwayThere = .5;
-    private double grabbed = .3;
-    private double almostThere = .7;
-    private double ittybittybit = .3;
-    private Servo grippy;
 
     public void runOpMode() {
         while (!opModeIsActive() && !isStopRequested()) {

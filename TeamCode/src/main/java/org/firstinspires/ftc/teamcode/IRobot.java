@@ -27,6 +27,10 @@ interface IRobot {
     void openGripper();
     void closeGripper();
 
+    void setWafflePosition (double wafflePosition);
+    void waffleDown();
+    void waffleUp();
+
 
     Map<String, ITelemetry> getTelemetryMap();
 }
