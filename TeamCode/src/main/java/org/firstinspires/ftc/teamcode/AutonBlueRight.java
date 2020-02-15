@@ -7,13 +7,10 @@ import static org.firstinspires.ftc.teamcode.BaseAuton.DRIVE_SPEED;
 
 @Autonomous
 public class AutonBlueRight extends LinearOpMode {
-
-
     @Override
     public void runOpMode() {
         BaseAuton ba = new BaseAuton(this);
         ba.stopAndResetAll();
-
 
         ba.raiseWaffleFoot();
         waitForStart();
