@@ -12,4 +12,8 @@ public class RobotConstants {
     public static double DRIVE_SPEED = 0.3;
     public static double LIFT_SPEED = 0.3;
     public static double TIMEOUT_SECONDS = 5.0;
+
+    public static double AUTO_STRAFE_1 = 25.0;
+    public static double AUTO_FORWARD_1 = 25.0;
+    public static double AUTO_FORWARD_2 = 40.0;
 }
